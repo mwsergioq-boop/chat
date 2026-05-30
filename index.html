@@ -3,253 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private Chat</title>
+<title>Наша история ❤️</title>
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-  body {
-    margin: 0;
-    font-family: Arial;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: #e5ddd5;
-  }
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:'Segoe UI',sans-serif;
+    overflow:hidden;
 
-  /* LOGIN */
-  #login {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: white;
-  }
+    background:
+        radial-gradient(circle at 20% 20%, #ffd1dc 0%, transparent 35%),
+        radial-gradient(circle at 80% 80%, #ffb6c1 0%, transparent 40%),
+        linear-gradient(135deg,#fff0f5,#ffe4ec);
+}
 
-  #login input {
-    width: 85%;
-    max-width: 300px;
-    padding: 14px;
-    margin: 6px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-  }
+/* ===== КАРТОЧКА ===== */
+.container{
+    position:relative;
+    z-index:10;
 
-  #login button {
-    width: 85%;
-    max-width: 300px;
-    padding: 14px;
-    font-size: 16px;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 10px;
-  }
+    width: min(92vw, 480px);   /* 👈 главное для адаптива */
+    padding: clamp(18px, 5vw, 40px);
 
-  /* CHAT SCREEN */
-  #chatScreen {
-    display: none;
-    height: 100vh;
-    flex-direction: column;
-  }
+    text-align:center;
 
-  /* TOP BAR */
-  #topbar {
-    background: #075E54;
-    color: white;
-    padding: 14px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 18px;
-  }
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(22px);
 
-  /* CHAT */
-  #chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-  }
+    border:1px solid rgba(255,255,255,0.4);
+    border-radius:30px;
 
-  .msg {
-    max-width: 75%;
-    padding: 10px;
-    margin: 6px 0;
-    border-radius: 12px;
-    word-wrap: break-word;
-    display: flex;
-    flex-direction: column;
-  }
+    box-shadow:
+        0 25px 60px rgba(255, 71, 126, 0.25),
+        inset 0 0 25px rgba(255,255,255,0.2);
 
-  .me {
-    background: #DCF8C6;
-    margin-left: auto;
-    border-bottom-right-radius: 0;
-  }
+    animation:fadeIn 1s ease;
+}
 
-  .other {
-    background: white;
-    margin-right: auto;
-    border-bottom-left-radius: 0;
-  }
+/* ===== ЗАГОЛОВОК ===== */
+h1{
+    font-size: clamp(20px, 6vw, 30px); /* адаптив */
+    color:#ff477e;
+    margin-bottom:20px;
+}
 
-  .name {
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 3px;
-    color: #555;
-  }
+/* ===== ФОТО ===== */
+.photos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap: clamp(10px, 4vw, 20px);
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
 
-  /* INPUT */
-  .input-area {
-    display: flex;
-    padding: 10px;
-    background: #f0f0f0;
-  }
+.profile-pic{
+    width: clamp(70px, 28vw, 120px);  /* 👈 адаптив */
+    height: clamp(70px, 28vw, 120px);
+    border-radius:50%;
+    object-fit:cover;
 
-  .input-area input {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 20px;
-    outline: none;
-    font-size: 16px;
-  }
+    border:3px solid white;
+    box-shadow:0 0 20px rgba(255,71,126,0.4);
 
-  .input-area button {
-    margin-left: 8px;
-    padding: 12px 16px;
-    background: #075E54;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 16px;
-  }
+    transition:0.3s;
+}
 
+.profile-pic:hover{
+    transform:scale(1.08);
+}
+
+.heart{
+    font-size: clamp(24px, 6vw, 42px);
+    animation:heartbeat 1.2s infinite;
+}
+
+/* ===== ТЕКСТ ===== */
+h2{
+    font-size: clamp(14px, 4.5vw, 20px);
+    color:#666;
+}
+
+.counter{
+    font-size: clamp(28px, 8vw, 48px);
+    font-weight:800;
+
+    background:linear-gradient(45deg,#ff477e,#ff85a1,#ffb6c1);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    margin-top:10px;
+}
+
+.subtitle{
+    margin-top:12px;
+    font-size: clamp(12px, 3.8vw, 16px);
+    color:#777;
+}
+
+.date{
+    margin-top:10px;
+    font-size: clamp(11px, 3.5vw, 14px);
+    color:#999;
+}
+
+/* ===== АНИМАЦИИ ===== */
+@keyframes heartbeat{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.25);}
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ===== ❤️ КЛИК СЕРДЦА ===== */
+.click-heart{
+    position:fixed;
+    pointer-events:none;
+    z-index:999;
+    animation:floatUp 1s ease forwards;
+}
+
+@keyframes floatUp{
+    0%{transform:translateY(0) scale(1);opacity:1;}
+    100%{transform:translateY(-120px) scale(1.8);opacity:0;}
+}
+
+/* ===== МЕЛКИЕ ТЕЛЕФОНЫ ===== */
+@media (max-width: 380px){
+    .container{
+        border-radius:20px;
+        padding:16px;
+    }
+
+    .photos{
+        gap:10px;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN -->
-<div id="login">
-  <h3>Вход</h3>
-  <input id="name" placeholder="Сережа или Дана">
-  <input id="code" placeholder="Код (1234)">
-  <button onclick="login()">Войти</button>
-</div>
+<div class="container">
 
-<!-- 💬 CHAT -->
-<div id="chatScreen">
+    <h1>💖 Наша история 💖</h1>
 
-  <div id="topbar">💬 Чат</div>
+    <div class="photos">
+        <img src="https://i.ibb.co/6wX96xL/RTxS0hWm.jpg" class="profile-pic">
+        <div class="heart">❤️</div>
+        <img src="https://i.postimg.cc/ppcVFJ73/IMG-1360.jpg" class="profile-pic">
+    </div>
 
-  <div id="chat"></div>
+    <h2>Мы вместе уже</h2>
+    <div class="counter" id="days-counter">...</div>
 
-  <div class="input-area">
-    <input id="msg" placeholder="Сообщение...">
-    <button onclick="send()">➤</button>
-  </div>
+    <div class="subtitle">Каждый момент с тобой ✨</div>
+    <div class="date">с 01.01.2025</div>
 
 </div>
 
-<script type="module">
+<script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+// ===== СЧЁТЧИК =====
+const YOUR_DATE = '2025-01-01';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCKAuV9Wor_L8NA0IeISL1pQ2ZYye_b2fI",
-  authDomain: "chat-app-7bb2e.firebaseapp.com",
-  databaseURL: "https://chat-app-7bb2e-default-rtdb.firebaseio.com",
-  projectId: "chat-app-7bb2e",
-  storageBucket: "chat-app-7bb2e.appspot.com",
-  messagingSenderId: "42361874631",
-  appId: "1:42361874631:web:ed327d978c9b52778bb6e2"
-};
+function updateCounter(){
+    const startDate = new Date(YOUR_DATE);
+    const today = new Date();
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    today.setHours(0,0,0,0);
+    startDate.setHours(0,0,0,0);
 
-const chat = document.getElementById("chat");
+    const days = Math.floor((today - startDate) / 86400000);
 
-const CHAT_CODE = "1234";
-const allowed = ["Сережа", "Дана"];
-
-let user = "";
-
-/* 👤 КТО С КЕМ ЧАТ */
-function getChatTitle(name) {
-  if (name === "Сережа") return "Дана";
-  if (name === "Дана") return "Сережа";
-  return "Чат";
+    document.getElementById("days-counter").innerText =
+        (days < 0 ? 0 : days) + " дней";
 }
 
-/* 🔐 LOGIN */
-window.login = function () {
-  const name = document.getElementById("name").value.trim();
-  const code = document.getElementById("code").value;
+updateCounter();
 
-  if (!allowed.includes(name)) {
-    alert("Только Сережа и Дана!");
-    return;
-  }
 
-  if (code !== CHAT_CODE) {
-    alert("Неверный код!");
-    return;
-  }
+// ===== ❤️ КЛИК СЕРДЦА =====
+document.addEventListener("click", (e)=>{
+    const heart = document.createElement("div");
+    heart.className = "click-heart";
+    heart.innerHTML = "❤️";
 
-  user = name;
+    heart.style.left = e.clientX + "px";
+    heart.style.top = e.clientY + "px";
+    heart.style.fontSize = (Math.random()*10 + 14) + "px";
 
-  document.getElementById("login").style.display = "none";
-  document.getElementById("chatScreen").style.display = "flex";
+    document.body.appendChild(heart);
 
-  /* 🟢 ОБНОВЛЯЕМ ЗАГОЛОВОК */
-  document.getElementById("topbar").innerText =
-    "💬 Чат с " + getChatTitle(user);
-};
-
-/* 💬 SEND */
-window.send = function () {
-  const input = document.getElementById("msg");
-  const text = input.value;
-
-  if (text.trim() === "") return;
-
-  push(ref(db, "messages"), {
-    name: user,
-    text: text,
-    time: Date.now()
-  });
-
-  input.value = "";
-};
-
-/* 📡 RECEIVE */
-onChildAdded(ref(db, "messages"), (data) => {
-  const m = data.val();
-
-  const div = document.createElement("div");
-  div.classList.add("msg");
-
-  if (m.name === user) {
-    div.classList.add("me");
-  } else {
-    div.classList.add("other");
-  }
-
-  div.innerHTML = `
-    <div class="name">${m.name}</div>
-    <div>${m.text}</div>
-  `;
-
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+    setTimeout(()=>heart.remove(),1000);
 });
 
 </script>
