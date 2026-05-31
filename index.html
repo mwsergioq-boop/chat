@@ -14,13 +14,6 @@
       --subtext-color: rgba(255, 255, 255, 0.5);
     }
 
-    body.theme-wine {
-      --bg-color: #14000a;
-      --glow-color: rgba(255, 46, 147, 0.6);
-      --shadow-color: rgba(255, 46, 147, 0.7);
-      --shadow-color-intense: #ff65a3;
-    }
-
     body {
       margin: 0;
       padding: 0;
@@ -35,7 +28,6 @@
       box-sizing: border-box;
       padding: 20px;
       position: relative;
-      transition: background 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .pulse-dot-btn {
@@ -109,7 +101,6 @@
       z-index: -1;
       filter: blur(50px);
       animation: glow-pulse 4s ease-in-out infinite alternate;
-      transition: background 0.8s ease;
     }
 
     .status-label {
@@ -212,7 +203,7 @@
     @media (max-width: 360px) { .counter { font-size: 75px; } }
   </style>
 </head>
-<body ondblclick="toggleTheme(event)">
+<body>
 
   <div class="pulse-dot-btn" id="pulseBtn" onclick="startFallingRomance()"></div>
   <div class="info-btn" onclick="toggleModal(event)">?</div>
@@ -231,7 +222,6 @@
       <ul class="modal-list">
         <li>Розовая точка: Романтичный листопад</li>
         <li>D + S: Маленький салют сердец</li>
-        <li>2 тапа по экрану: Смена темы</li>
       </ul>
       <button class="close-btn" onclick="toggleModal(event)">Понятно</button>
     </div>
@@ -243,11 +233,6 @@
     const setDay = 29;
 
     const startDate = new Date(setYear, setMonth, setDay);
-
-    function toggleTheme(e) {
-      if (e.target.closest('.pulse-dot-btn') || e.target.closest('.info-btn') || e.target.closest('.modal-content') || e.target.id === 'initials') return;
-      document.body.classList.toggle('theme-wine');
-    }
 
     function startFallingRomance() {
       const heartCount = 50; 
