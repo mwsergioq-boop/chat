@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Счетчик</title>
+  <style>
+    :root {
+      --bg-color: #000000;
+      --text-color: #ffffff;
+      --glow-color: rgba(255, 46, 147, 0.5);
+      --shadow-color: rgba(255, 46, 147, 0.6);
+      --shadow-color-intense: rgba(255, 105, 180, 0.9);
+      --subtext-color: rgba(255, 255, 255, 0.5);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-color);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 20px;
+      position: relative;
+      perspective: 1000px;
+    }
+
+    /* БЛОК ИЗ 3-Х ПУЛЬСИРУЮЩИХ ТОЧЕК */
+    .dots-container {
+      position: absolute;
+      top: 50px;
+      display: flex;
+      gap: 18px; /* Расстояние между точками */
+      z-index: 10;
+    }
+
+    .pulse-dot {
+      width: 14px;
+      height: 14px;
+      background-color: #ff2e93;
+      border-radius: 50%;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 0 12px #ff2e93, 0 0 25px #ff2e93;
+      animation: dot-pulse 2s infinite ease-in-out;
+      transition: transform 0.1s;
+    }
+
+    .pulse-dot:active {
+      transform: scale(0.8);
+    }
+
+    /* Смещаем анимацию во времени, чтобы точки пульсировали "волной" */
+    .pulse-dot:nth-child(2) { animation-delay: 0.3s; }
+    .pulse-dot:nth-child(3) { animation-delay: 0.6s; }
+
+    @keyframes dot-pulse {
+      0% { box-shadow: 0 0 10px #ff2e93, 0 0 20px #ff2e93; transform: scale(1); }
+      50% { box-shadow: 0 0 20px #ff2e93, 0 0 40px #ff2e93; transform: scale(1.15); }
+      100% { box-shadow: 0 0 10px #ff2e93, 0 0 20px #ff2e93; transform: scale(1); }
+    }
+
+    /* ЭЛЕМЕНТЫ ЛИСТОПАДА (СЕРДЕЧКИ И БУКВЫ) */
+    .falling-element {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      z-index: 9;
+      will-change: transform, opacity;
+      top: -50px;
+    }
+
+    .falling-heart {
+      filter: drop-shadow(0 0 8px rgba(255, 46, 147, 0.4));
+    }
+
+    .falling-letter {
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 15px #ff2e93, 0 0 30px #ff2e93;
+      font-family: 'Georgia', serif;
+    }
+
+    /* Кнопка "Инфо" */
+    .info-btn {
+      position: absolute;
+      top: 47px;
+      right: 30px;
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      z-index: 10;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.3s;
+    }
+    .info-btn:active { color: rgba(255, 255, 255, 0.8); }
+
+    /* Контейнер для цифр */
+    .counter-wrapper {
+      position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.1s ease;
+    }
+
+    .counter-wrapper:active {
+      transform: scale(0.95);
+    }
+
+    .counter-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140%;
+      height: 140%;
+      background: radial-gradient(circle, var(--glow-color) 0%, rgba(0,0,0,0) 70%);
+      z-index: -1;
+      filter: blur(50px);
+      animation: glow-pulse 4s ease-in-out infinite alternate;
+    }
+
+    /* ЛЕГКАЯ НАДПИСЬ-ПОДСКАЗКА НАД ЦИФРАМИ */
+    .status-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      color: rgba(255, 46, 147, 0.7);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      transition: opacity 0.3s ease;
+      text-shadow: 0 0 8px rgba(255, 46, 147, 0.3);
+    }
+
+    /* Белый счетчик с розовым неоновым оттенком */
+    .counter {
+      font-size: 150px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text-color);
+      margin: 0;
+      line-height: 1;
+      transition: font-size 0.3s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .counter.flip-animation { transform: rotateY(360deg); }
+
+    .counter-active-anims {
+      animation: heartbeat 1.8s ease-in-out infinite alternate;
+    }
+
+    /* Секундомер */
+    .live-timer {
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      color: var(--subtext-color);
+      margin-top: 20px;
+      text-transform: uppercase;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+
+    /* Инициалы внизу экрана */
+    .initials {
+      position: absolute;
+      bottom: 35px;
+      font-size: 13px;
+      font-weight: 200;
+      letter-spacing: 7px;
+      color: rgba(255, 255, 255, 0.25);
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    @keyframes heartbeat {
+      0% { text-shadow: 0 0 40px var(--shadow-color); transform: scale(1); }
+      100% { text-shadow: 0 0 65px var(--shadow-color-intense); transform: scale(1.03); }
+    }
+
+    @keyframes glow-pulse {
+      0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    /* Модальное окно */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-content {
+      background: #0d0d0d;
+      border: 1px solid rgba(255, 46, 147, 0.2);
+      padding: 30px;
+      border-radius: 24px;
+      width: 85%;
+      max-width: 340px;
+      color: #fff;
+      box-shadow: 0 20px 50px rgba(255, 46, 147, 0.15);
+      transform: translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    .modal-title { font-size: 19px; font-weight: 700; margin: 0 0 15px 0; color: #ff2e93; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; text-align: center; }
+    .modal-list { padding-left: 15px; margin: 0 0 20px 0; }
+    .modal-list li { margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, 0.75); }
+    .close-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(90deg, #ff2e93, #ff65a3); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 46, 147, 0.3); }
+
+    /* Адаптивность */
+    @media (max-width: 768px) { .counter { font-size: 110px; } .live-timer { font-size: 12px; letter-spacing: 2px; } }
+    @media (max-width: 450px) { .counter { font-size: 85px; } .live-timer { font-size: 11px; letter-spacing: 1.5px; } }
+    @media (max-width: 360px) { .counter { font-size: 75px; } }
+  </style>
+</head>
+<body>
+
+  <!-- Меню из 3-х точек -->
+  <div class="dots-container">
+    <div class="pulse-dot" onclick="goToGallery()" title="Фотографии"></div>
+    <div class="pulse-dot" onclick="startFallingRomance()" title="Листопад"></div>
+    <div class="pulse-dot" title="Секрет"></div>
+  </div>
+
+  <div class="info-btn" onclick="toggleModal()">?</div>
+
+  <div class="counter-wrapper" onclick="switchDateMode()">
+    <div class="status-label" id="statusLabelNode">Мы вместе</div>
+    
+    <div class="counter counter-active-anims" id="counterNode">
+      <span id="count">0</span>
+    </div>
+    <div class="live-timer" id="liveTimerNode">0д 0ч 0м 0с</div>
+  </div>
+
+  <div class="initials">D + S</div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal-content">
+      <h3 class="modal-title">Справка для Xxx</h3>
+      <ul class="modal-list">
+        <li>1-я точка: Галерея фото</li>
+        <li>2-я точка: Романтичный листопад</li>
+        <li>Нажатие на цифры: Смена режима</li>
+      </ul>
+      <button class="close-btn" onclick="toggleModal()">Понятно</button>
+    </div>
+  </div>
+
+  <script>
+    // ==================== НАСТРОЙКА ДАТЫ И ССЫЛОК ====================
+    const startDateStr = "2026-03-29"; 
+    
+    function goToGallery() {
+      // Здесь укажи адрес страницы, куда ведут фотки
+      window.location.href = "https://твой-сайт-с-фото.com"; 
+    }
+    // =================================================================
+
+    const startDate = new Date(startDateStr);
+    let currentMode = "passed";
+    let globalPassedDays = 0;
+    let globalRemainingDays = 0;
+
+    function startFallingRomance() {
+      const heartCount = 50; 
+      const heartTypes = ['💗'];
+      const letters = ['D', 'S']; 
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      let pool = [];
+
+      for (let i = 0; i < heartCount; i++) {
+        pool.push({ type: 'heart', val: heartTypes[Math.floor(Math.random() * heartTypes.length)] });
+      }
+
+      letters.forEach(letter => pool.push({ type: 'letter', val: letter }));
+      pool.sort(() => Math.random() - 0.5);
+
+      pool.forEach((item, index) => {
+        const el = document.createElement('div');
+        el.classList.add('falling-element');
+        el.classList.add(item.type === 'heart' ? 'falling-heart' : 'falling-letter');
+        el.textContent = item.val;
+
+        const startX = Math.random() * screenWidth;
+        el.style.left = `${startX}px`;
+
+        let scale = Math.random() * 0.6 + 0.4; 
+        let fontSize = 20;
+
+        if (item.type === 'letter') {
+          scale = 1; 
+          fontSize = Math.random() * 8 + 26; 
+        } else {
+          fontSize = Math.random() * 10 + 16; 
+          if (fontSize < 20) {
+            el.style.filter = `blur(${Math.random() * 1.5 + 0.5}px) opacity(0.6)`;
+          }
+        }
+        el.style.fontSize = `${fontSize}px`;
+
+        document.body.appendChild(el);
+
+        const duration = Math.random() * 4000 + 5000; 
+        const delay = index * (Math.random() * 120 + 60); 
+        
+        const swing1 = Math.random() * 80 + 40;  
+        const swing2 = Math.random() * 80 + 40;  
+        const finalX = startX + (Math.random() * 160 - 80); 
+
+        const rot1 = Math.random() * 45 - 22;
+        const rot2 = Math.random() * 90 - 45;
+        const rot3 = Math.random() * 180 - 90;
+
+        const animation = el.animate([
+          { transform: `translate3d(0, 0, 0) scale(0.3) rotate(0deg)`, opacity: 0 },
+          { 
+            opacity: Math.random() * 0.3 + 0.7, 
+            transform: `translate3d(${swing1}px, ${screenHeight * 0.28}px, 0) scale(${scale}) rotate(${rot1}deg)`,
+            offset: 0.25
+          },
+          { 
+            transform: `translate3d(${-swing2}px, ${screenHeight * 0.65}px, 0) scale(${scale}) rotate(${rot2}deg)`,
+            opacity: 0.8,
+            offset: 0.65
+          },
+          { transform: `translate3d(${finalX - startX}px, ${screenHeight + 70}px, 0) scale(${scale * 0.8}) rotate(${rot3}deg)`, opacity: 0 }
+        ], {
+          duration: duration,
+          delay: delay,
+          easing: 'cubic-bezier(0.33, 0.46, 0.66, 0.94)', 
+          fill: 'forwards'
+        });
+
+        animation.onfinish = () => el.remove();
+      });
+    }
+
+    function updateTimers() {
+      const today = new Date();
+      
+      const diffPassed = today - startDate;
+      const passedDays = Math.floor(diffPassed / (1000 * 60 * 60 * 24));
+      const passedHours = Math.floor((diffPassed / (1000 * 60 * 60)) % 24);
+      const passedMinutes = Math.floor((diffPassed / (1000 * 60)) % 60);
+      const passedSeconds = Math.floor((diffPassed / 1000) % 60);
+
+      globalPassedDays = passedDays;
+
+      let nextAnniversary = new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate());
+      if (today >= nextAnniversary) {
+        nextAnniversary.setFullYear(today.getFullYear() + 1);
+      }
+      
+      const diffRemaining = nextAnniversary - today;
+      const remainingDays = Math.ceil(diffRemaining / (1000 * 60 * 60 * 24));
+      const remHours = Math.floor((diffRemaining / (1000 * 60 * 60)) % 24);
+      const remMinutes = Math.floor((diffRemaining / (1000 * 60)) % 60);
+      const remSeconds = Math.floor((diffRemaining / 1000) % 60);
+
+      globalRemainingDays = remainingDays;
+
+      const timerNode = document.getElementById('liveTimerNode');
+      if (currentMode === "passed") {
+        timerNode.textContent = `${passedDays}д ${passedHours}ч ${passedMinutes}м ${passedSeconds}с`;
+      } else {
+        const displayRemDays = remHours === 0 && remMinutes === 0 && remSeconds === 0 ? remainingDays : remainingDays - 1;
+        timerNode.textContent = `${displayRemDays}д ${remHours}ч ${remMinutes}м ${remSeconds}с`;
+      }
+    }
+
+    function animateCounter(targetValue) {
+      const countElement = document.getElementById('count');
+      if (targetValue <= 0) {
+        countElement.textContent = 0;
+        return;
+      }
+      const duration = 1600;
+      const startTimestamp = performance.now();
+
+      function step(now) {
+        const progress = Math.min((now - startTimestamp) / duration, 1);
+        const easeProgress = progress * (2 - progress);
+        countElement.textContent = Math.floor(easeProgress * targetValue);
+        if (progress < 1) window.requestAnimationFrame(step);
+      }
+      window.requestAnimationFrame(step);
+    }
+
+    function switchDateMode() {
+      const counterNode = document.getElementById('counterNode');
+      const countElement = document.getElementById('count');
+      const labelElement = document.getElementById('statusLabelNode');
+
+      counterNode.classList.remove('counter-active-anims');
+      counterNode.classList.add('flip-animation');
+      labelElement.style.opacity = 0;
+
+      setTimeout(() => {
+        if (currentMode === "passed") {
+          currentMode = "remaining";
+          countElement.textContent = globalRemainingDays;
+          labelElement.textContent = "До годовщины";
+        } else {
+          currentMode = "passed";
+          countElement.textContent = globalPassedDays;
+          labelElement.textContent = "Мы вместе";
+        }
+        updateTimers();
+        labelElement.style.opacity = 1;
+      }, 300);
+
+      setTimeout(() => {
+        counterNode.classList.remove('flip-animation');
+        counterNode.classList.add('counter-active-anims');
+      }, 600);
+    }
+
+    function toggleModal() { document.getElementById('modalOverlay').classList.toggle('active'); }
+    function closeModalOutside(e) { if (e.target.id === 'modalOverlay') toggleModal(); }
+
+    function init() {
+      updateTimers();
+      animateCounter(globalPassedDays);
+      setInterval(updateTimers, 1000);
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
