@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Счетчик</title>
+  <style>
+    /* ПРЕМИАЛЬНЫЕ ЦВЕТОВЫЕ ПАЛИТРЫ */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0b0214, #04000a, #160214);
+      --text-gradient: linear-gradient(45deg, #ff2e93, #ff8a75, #ff5e97, #c175ff, #8da0ff);
+      --glow-color: rgba(255, 46, 147, 0.45);
+      --shadow-color: rgba(255, 46, 147, 0.5);
+      --shadow-color-intense: rgba(213, 117, 255, 0.85);
+      --panel-border: rgba(255, 46, 147, 0.15);
+      --star-color: rgba(255, 138, 117, 0.4);
+    }
+
+    [data-theme="emerald"] {
+      --bg-gradient: linear-gradient(135deg, #010a06, #000402, #021411);
+      --text-gradient: linear-gradient(45deg, #00f5a0, #00d2ff, #23d5ab, #5effa4, #00b4db);
+      --glow-color: rgba(0, 245, 160, 0.4);
+      --shadow-color: rgba(0, 245, 160, 0.5);
+      --shadow-color-intense: rgba(0, 210, 255, 0.85);
+      --panel-border: rgba(0, 245, 160, 0.15);
+      --star-color: rgba(0, 210, 255, 0.4);
+    }
+
+    [data-theme="ocean"] {
+      --bg-gradient: linear-gradient(135deg, #01040f, #000105, #051026);
+      --text-gradient: linear-gradient(45deg, #0072ff, #00f2fe, #4facfe, #38ef7d, #00c6ff);
+      --glow-color: rgba(0, 242, 254, 0.4);
+      --shadow-color: rgba(0, 114, 255, 0.5);
+      --shadow-color-intense: rgba(0, 242, 254, 0.85);
+      --panel-border: rgba(0, 242, 254, 0.15);
+      --star-color: rgba(0, 242, 254, 0.4);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-gradient);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 20px;
+      position: relative;
+      perspective: 1000px;
+      transition: background 1s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* КОНТЕЙНЕР ДЛЯ ЗВЕЗДНОГО НЕБА */
+    .stars-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .star {
+      position: absolute;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px 1px var(--star-color);
+      animation: twist 4s ease-in-out infinite alternate;
+      transition: box-shadow 1s ease;
+    }
+
+    @keyframes twist {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      100% { opacity: 0.7; transform: scale(1.2); }
+    }
+
+    /* Стеклянная панель управления */
+    .theme-panel {
+      position: absolute;
+      top: 35px;
+      display: flex;
+      gap: 22px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: border-color 0.8s ease;
+    }
+
+    .theme-dot-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dot-pink { background: linear-gradient(135deg, #ff2e93, #ff75b5); box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4), 0 0 10px rgba(255, 46, 147, 0.5); }
+    .dot-emerald { background: linear-gradient(135deg, #00f5a0, #00ffca); box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4), 0 0 10px rgba(0, 245, 160, 0.5); }
+    .dot-ocean { background: linear-gradient(135deg, #0072ff, #00f2fe); box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4), 0 0 10px rgba(0, 114, 255, 0.5); }
+
+    .theme-dot-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      transform: scale(0.6);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .theme-dot-wrapper.active::after { transform: scale(1.1); opacity: 1; }
+    .wrapper-pink.active::after { border-color: rgba(255, 46, 147, 0.6); box-shadow: 0 0 8px rgba(255, 46, 147, 0.2); }
+    .wrapper-emerald.active::after { border-color: rgba(0, 245, 160, 0.6); box-shadow: 0 0 8px rgba(0, 245, 160, 0.2); }
+    .wrapper-ocean.active::after { border-color: rgba(0, 242, 254, 0.6); box-shadow: 0 0 8px rgba(0, 242, 254, 0.2); }
+
+    .theme-dot-wrapper:active .theme-dot { transform: scale(0.85); box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); }
+
+    /* Кнопка "Инфо" */
+    .info-btn {
+      position: absolute;
+      top: 36px;
+      right: 30px;
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      z-index: 10;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.03);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+    }
+    .info-btn:active { color: rgba(255, 255, 255, 0.8); transform: scale(0.9); }
+
+    /* Контейнер для цифр */
+    .counter-wrapper {
+      position: relative;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 2;
+    }
+
+    .counter-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 130%;
+      height: 130%;
+      background: radial-gradient(circle, var(--glow-color) 0%, rgba(0,0,0,0) 65%);
+      z-index: -1;
+      filter: blur(40px);
+      animation: glow-pulse 4s ease-in-out infinite alternate;
+      transition: background 1s ease;
+    }
+
+    /* Счетчик */
+    .counter {
+      font-size: 150px;
+      font-weight: 700;
+      text-align: center;
+      background: var(--text-gradient);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      line-height: 1;
+      transition: font-size 0.3s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+      will-change: transform, background-position;
+    }
+
+    .counter.flip-animation { transform: rotateY(360deg); }
+
+    .counter-active-anims {
+      animation: 
+        rainbow 8s linear infinite,
+        heartbeat 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes rainbow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes heartbeat {
+      0% { text-shadow: 0 0 50px var(--shadow-color); transform: scale(1); }
+      100% { text-shadow: 0 0 70px var(--shadow-color-intense); transform: scale(1.04); }
+    }
+
+    @keyframes glow-pulse {
+      0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    .hint {
+      position: absolute;
+      bottom: 45px;
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: fade-hint 4s forwards;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes fade-hint { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+    /* Модальное окно */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(4, 1, 8, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-content {
+      background: rgba(15, 6, 22, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 24px;
+      width: 85%;
+      max-width: 340px;
+      color: #fff;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      transform: translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    .modal-title { font-size: 19px; font-weight: 700; margin: 0 0 15px 0; color: #ff99dd; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; text-align: center; }
+    .modal-list { padding-left: 15px; margin: 0 0 20px 0; }
+    .modal-list li { margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: rgba(255, 255, 255, 0.75); }
+    .close-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(90deg, #ff3399, #cc99ff); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 51, 153, 0.25); }
+
+    /* Адаптивность */
+    @media (max-width: 768px) { .counter { font-size: 110px; } }
+    @media (max-width: 450px) { .counter { font-size: 85px; } }
+    @media (max-width: 360px) { .counter { font-size: 75px; } }
+  </style>
+</head>
+<body>
+
+  <div class="stars-container" id="starsContainer"></div>
+
+  <div class="theme-panel">
+    <div class="theme-dot-wrapper wrapper-pink active" onclick="setTheme('pink', this)">
+      <div class="theme-dot dot-pink"></div>
+    </div>
+    <div class="theme-dot-wrapper wrapper-emerald" onclick="setTheme('emerald', this)">
+      <div class="theme-dot dot-emerald"></div>
+    </div>
+    <div class="theme-dot-wrapper wrapper-ocean" onclick="setTheme('ocean', this)">
+      <div class="theme-dot dot-ocean"></div>
+    </div>
+  </div>
+
+  <div class="info-btn" onclick="toggleModal()">?</div>
+
+  <div class="counter-wrapper" onclick="switchDateMode()">
+    <div class="counter counter-active-anims" id="counterNode">
+      <span id="count">0</span>
+    </div>
+  </div>
+
+  <div class="hint">Нажми на цифры</div>
+
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal-content">
+      <h3 class="modal-title">Справка</h3>
+      <ul class="modal-list">
+        <li><b>Режимы:</b> Нажмите на цифры, чтобы переключить отображение со счетчика прошедших дней на количество дней до следующей годовщины.</li>
+        <li><b>Темы:</b> Переключайте цветовые схемы с помощью аккуратной панели точек вверху экрана.</li>
+      </ul>
+      <button class="close-btn" onclick="toggleModal()">Понятно</button>
+    </div>
+  </div>
+
+  <script>
+    // ==================== НАСТРОЙКА ДАТ ====================
+    const startDateStr = "2025-02-14";   // ←←← Твоя дата (ГГГГ-ММ-ДД)
+    // =======================================================
+
+    const startDate = new Date(startDateStr);
+    let currentMode = "passed";
+    let globalPassedDays = 0;
+    let globalRemainingDays = 0;
+
+    // Генерация звездного неба
+    function generateStars() {
+      const container = document.getElementById('starsContainer');
+      const starCount = 65; // Количество звезд на небе
+
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        // Случайный размер от 1 до 3 пикселей
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        // Случайное положение по всему экрану
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.left = `${Math.random() * 100}vw`;
+        
+        // Случайная задержка анимации мерцания, чтобы они мигали не одновременно
+        star.style.animationDelay = `${Math.random() * 4}s`;
+        star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+
+        container.appendChild(star);
+      }
+    }
+
+    function setTheme(themeName, element) {
+      if (themeName === 'pink') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', themeName);
+      }
+      document.querySelectorAll('.theme-dot-wrapper').forEach(dot => dot.classList.remove('active'));
+      element.classList.add('active');
+    }
+
+    function calculateDays() {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const start = new Date(startDate);
+      start.setHours(0,0,0,0);
+
+      const diffTime = today - start;
+      globalPassedDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      let nextAnniversary = new Date(today.getFullYear(), start.getMonth(), start.getDate());
+      if (today >= nextAnniversary) {
+        nextAnniversary.setFullYear(today.getFullYear() + 1);
+      }
+      const remainingTime = nextAnniversary - today;
+      globalRemainingDays = Math.ceil(remainingTime / (1000 * 60 * 60 * 24));
+    }
+
+    function animateCounter(targetValue) {
+      const countElement = document.getElementById('count');
+      if (targetValue <= 0) {
+        countElement.textContent = 0;
+        return;
+      }
+      const duration = 1800;
+      const startTimestamp = performance.now();
+
+      function step(now) {
+        const progress = Math.min((now - startTimestamp) / duration, 1);
+        const easeProgress = progress * (2 - progress);
+        countElement.textContent = Math.floor(easeProgress * targetValue);
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      }
+      window.requestAnimationFrame(step);
+    }
+
+    function switchDateMode() {
+      const counterNode = document.getElementById('counterNode');
+      const countElement = document.getElementById('count');
+
+      counterNode.classList.remove('counter-active-anims');
+      counterNode.classList.add('flip-animation');
+
+      setTimeout(() => {
+        if (currentMode === "passed") {
+          currentMode = "remaining";
+          countElement.textContent = globalRemainingDays;
+        } else {
+          currentMode = "passed";
+          countElement.textContent = globalPassedDays;
+        }
+      }, 300);
+
+      setTimeout(() => {
+        counterNode.classList.remove('flip-animation');
+        counterNode.classList.add('counter-active-anims');
+      }, 600);
+    }
+
+    function toggleModal() { document.getElementById('modalOverlay').classList.toggle('active'); }
+    function closeModalOutside(e) { if (e.target.id === 'modalOverlay') toggleModal(); }
+
+    function init() {
+      generateStars();
+      calculateDays();
+      animateCounter(globalPassedDays);
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
