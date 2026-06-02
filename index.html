@@ -237,7 +237,7 @@
     function startFallingRomance() {
       const heartCount = 50; 
       const pool = [];
-      const letters = ['D & S'];
+      const letters = ['D', 'S'];
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
@@ -281,7 +281,7 @@
       for (let i = 0; i < heartCount; i++) {
         const el = document.createElement('div');
         el.classList.add('falling-element', 'falling-heart');
-        el.textContent = '💕,;
+        el.textContent = '💓';
         el.style.left = `${centerX}px`;
         el.style.top = `${centerY}px`;
         el.style.fontSize = '20px';
