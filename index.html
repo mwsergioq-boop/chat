@@ -3,17 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="CHSD - Счётчик дней вместе">
+  <meta name="theme-color" content="#000000">
   <title>CHSD</title>
   <style>
     :root {
       --bg-color: #000000;
       --text-color: #ffffff;
       --subtext-color: rgba(255, 255, 255, 0.5);
+      --accent-color: #ff2e93;
     }
 
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+
     body {
-      margin: 0;
-      padding: 0;
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -22,36 +26,148 @@
       background: var(--bg-color);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       overflow: hidden;
-      box-sizing: border-box;
       padding: 20px;
+      color: var(--text-color);
     }
 
-    .pulse-dot-btn {
-      position: absolute;
-      top: 50px;
+    /* Avatar */
+    .avatar-container {
+      position: fixed;
+      top: 35px;
+      left: 35px;
       z-index: 10;
-      width: 14px;
-      height: 14px;
-      background-color: #ff2e93;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.3);
       cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .avatar:hover,
+    .avatar:active {
+      transform: scale(1.1);
+    }
+
+    /* Top Line - Center */
+    .divider-line {
+      position: fixed;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.15);
+      z-index: 10;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .divider-line:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Info Button */
+    .info-btn {
+      position: fixed;
+      top: 35px;
+      right: 35px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .info-btn:hover,
+    .info-btn:active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Side Menu */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 200;
+    }
+
+    .menu-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-content {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: 280px;
+      background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%);
+      border-right: 1px solid rgba(255, 46, 147, 0.1);
+      padding: 50px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+      z-index: 201;
+      overflow-y: auto;
+    }
+
+    .menu-overlay.active .menu-content {
+      transform: translateX(0);
+    }
+
+    .menu-item {
+      padding: 14px 16px;
+      color: #fff;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 400;
+      font-size: 14px;
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 0 15px #ff2e93, 0 0 30px #ff2e93, 0 0 45px #ff2e93;
-      animation: dot-super-pulse 1.5s infinite ease-in-out;
-      transition: transform 0.1s;
+      letter-spacing: 0.5px;
     }
 
-    .pulse-dot-btn:active { transform: scale(0.75); }
-
-    @keyframes dot-super-pulse {
-      0% { box-shadow: 0 0 12px #ff2e93, 0 0 25px #ff2e93, 0 0 35px #ff2e93; transform: scale(1); }
-      50% { box-shadow: 0 0 25px #ff2e93, 0 0 50px #ff2e93, 0 0 75px #ff2e93, 0 0 100px #ff2e93; transform: scale(1.3); }
-      100% { box-shadow: 0 0 12px #ff2e93, 0 0 25px #ff2e93, 0 0 35px #ff2e93; transform: scale(1); }
+    .menu-item:hover {
+      background: rgba(255, 46, 147, 0.08);
+      border-color: rgba(255, 46, 147, 0.2);
+      transform: translateX(4px);
     }
 
+    .menu-item:active {
+      transform: translateX(2px);
+    }
+
+    /* Falling Elements */
     .falling-element {
-      position: absolute;
+      position: fixed;
       pointer-events: none;
       user-select: none;
       z-index: 9;
@@ -59,49 +175,44 @@
       top: -50px;
     }
 
-    .falling-heart { filter: drop-shadow(0 0 8px rgba(255, 46, 147, 0.4)); }
-    .falling-letter { font-weight: 700; color: #ffffff; text-shadow: 0 0 15px #ff2e93, 0 0 30px #ff2e93; font-family: 'Georgia', serif; }
-
-    .info-btn {
-      position: absolute;
-      top: 47px;
-      right: 30px;
-      color: rgba(255, 255, 255, 0.25);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      z-index: 10;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: all 0.3s;
+    .falling-heart {
+      filter: drop-shadow(0 0 8px rgba(255, 46, 147, 0.4));
+      font-size: 20px;
     }
-    .info-btn:active { color: rgba(255, 255, 255, 0.8); }
 
+    .falling-letter {
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 15px #ff2e93, 0 0 30px #ff2e93;
+      font-family: 'Georgia', serif;
+      font-size: 30px;
+    }
+
+    /* Counter */
     .counter-wrapper {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       pointer-events: none;
+      z-index: 5;
     }
 
     .status-label {
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 4px;
-      color: rgba(255, 46, 147, 0.7);
+      color: var(--accent-color);
       text-transform: uppercase;
       margin-bottom: 5px;
     }
 
     .counter {
-      font-size: 150px;
+      font-size: clamp(85px, 25vw, 150px);
       font-weight: 700;
-      text-align: center;
       color: var(--text-color);
-      margin: 0;
+      animation: heartbeat 1.8s infinite alternate;
       line-height: 1;
-      animation: heartbeat 1.8s ease-in-out infinite alternate;
     }
 
     @keyframes heartbeat {
@@ -111,30 +222,32 @@
 
     .live-timer {
       font-size: 14px;
-      font-weight: 400;
       letter-spacing: 3px;
       color: var(--subtext-color);
       margin-top: 20px;
       text-transform: uppercase;
       font-variant-numeric: tabular-nums;
-      text-align: center;
     }
 
+    /* Initials */
     .initials {
-      position: absolute;
+      position: fixed;
       bottom: 35px;
       font-size: 13px;
       font-weight: 200;
       letter-spacing: 7px;
       color: rgba(255, 255, 255, 0.25);
-      text-transform: uppercase;
-      user-select: none;
       cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: color 0.3s;
+      transition: color 0.3s ease;
+      user-select: none;
+      padding: 5px;
     }
-    .initials:active { color: rgba(255, 255, 255, 0.6); }
 
+    .initials:active {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -151,22 +264,92 @@
       transition: opacity 0.4s ease;
       z-index: 100;
     }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-content { background: #0d0d0d; border: 1px solid rgba(255, 46, 147, 0.2); padding: 30px; border-radius: 24px; width: 85%; max-width: 340px; color: #fff; transform: translateY(20px); transition: transform 0.4s; }
-    .modal-overlay.active .modal-content { transform: translateY(0); }
-    .modal-title { font-size: 19px; font-weight: 700; margin: 0 0 15px 0; color: #ff2e93; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; text-align: center; }
-    .modal-list { padding-left: 15px; margin: 0 0 20px 0; }
-    .modal-list li { margin-bottom: 12px; font-size: 14px; color: rgba(255, 255, 255, 0.75); }
-    .close-btn { display: block; width: 100%; padding: 12px; background: #ff2e93; border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; }
 
-    @media (max-width: 768px) { .counter { font-size: 110px; } }
-    @media (max-width: 450px) { .counter { font-size: 85px; } }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: #0d0d0d;
+      border: 1px solid rgba(255, 46, 147, 0.2);
+      padding: 30px;
+      border-radius: 24px;
+      width: 85%;
+      max-width: 340px;
+      color: #fff;
+    }
+
+    .modal-title {
+      font-size: 19px;
+      color: var(--accent-color);
+      text-align: center;
+      margin: 0 0 15px 0;
+    }
+
+    .modal-list {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+      padding-left: 15px;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: opacity 0.3s ease;
+    }
+
+    .close-btn:hover,
+    .close-btn:active {
+      opacity: 0.9;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .counter { font-size: clamp(85px, 20vw, 120px); }
+      .avatar-container { top: 25px; left: 25px; }
+      .info-btn { top: 25px; right: 25px; }
+      .initials { bottom: 25px; }
+      .menu-content { width: 260px; }
+    }
+
+    @media (max-width: 450px) {
+      .counter { font-size: clamp(70px, 18vw, 100px); }
+      .live-timer { font-size: 12px; letter-spacing: 2px; }
+      .status-label { font-size: 10px; letter-spacing: 2px; }
+      .menu-content { width: 240px; padding: 40px 16px; }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="pulse-dot-btn" id="pulseBtn" onclick="startFallingRomance()"></div>
-  <div class="info-btn" onclick="toggleModal(event)">?</div>
+  <div class="avatar-container">
+    <img src="https://i.ibb.co/gbzz23yg/IMG-1455.jpg" alt="Меню" class="avatar" onclick="toggleMenu()" role="button" tabindex="0">
+  </div>
+
+  <div class="divider-line" onclick="startFallingRomance()" title="Нажмите для сердечек"></div>
+  <button class="info-btn" onclick="toggleModal(event)" aria-label="Информация">?</button>
+
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()">
+    <div class="menu-content" onclick="event.stopPropagation()">
+      <div class="menu-item" role="button" tabindex="0">Галерея</div>
+      <div class="menu-item" role="button" tabindex="0">Заметки</div>
+      <div class="menu-item" role="button" tabindex="0">Дата</div>
+    </div>
+  </div>
 
   <div class="counter-wrapper">
     <div class="status-label">together</div>
@@ -174,77 +357,178 @@
     <div class="live-timer" id="liveTimerNode">0д 0ч 0м 0с</div>
   </div>
 
-  <div class="initials" id="initials" onclick="triggerHeartsFromInitials()">D & S</div>
+  <div class="initials" id="initials" onclick="triggerHeartsFromInitials()" role="button" tabindex="0" title="Нажмите для сердечек">D & S</div>
 
   <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
     <div class="modal-content">
       <h3 class="modal-title">V1.3b</h3>
       <ul class="modal-list">
-        <li>Real-time synchronization, Heart-burst interaction effect, DOM tree refactoring, Memory leak resolution, UI/UX refinement, Asset optimization, Deployment pipeline automation</li>
+        <li>OPT</li>
+        <li>OTZV</li>
+        <li>preferes-reduced-motion</li>
+        <li>(a11y)</li>
       </ul>
       <button class="close-btn" onclick="toggleModal(event)">Понятно</button>
     </div>
   </div>
 
   <script>
-    const startDate = new Date(2026, 2, 29);
+    // Configuration
+    const CONFIG = {
+      startDate: new Date(2026, 2, 29),
+      heartCount: 50,
+      letters: ['D', 'S'],
+      updateInterval: 1000,
+      fallingDuration: { min: 5000, max: 8000 },
+      heartsBurstCount: 10,
+      heartsBurstDuration: 1000
+    };
 
+    let updateTimerInterval = null;
+    let animationFrameId = null;
+
+    // Event Listeners
+    function setupEventListeners() {
+      const avatar = document.querySelector('.avatar');
+      const initials = document.getElementById('initials');
+      const dividerLine = document.querySelector('.divider-line');
+      const menuItems = document.querySelectorAll('.menu-item');
+
+      // Keyboard support
+      avatar.addEventListener('keydown', (e) => e.key === 'Enter' && toggleMenu());
+      dividerLine.addEventListener('keydown', (e) => e.key === 'Enter' && startFallingRomance());
+      initials.addEventListener('keydown', (e) => e.key === 'Enter' && triggerHeartsFromInitials());
+      menuItems.forEach(item => {
+        item.addEventListener('keydown', (e) => e.key === 'Enter' && handleMenuItemClick(e));
+      });
+    }
+
+    function handleMenuItemClick(e) {
+      console.log('Menu item:', e.target.textContent);
+      // Add menu item functionality here
+    }
+
+    function toggleMenu() {
+      document.getElementById('menuOverlay').classList.toggle('active');
+    }
+
+    function toggleModal(e) {
+      e?.stopPropagation();
+      document.getElementById('modalOverlay').classList.toggle('active');
+    }
+
+    function closeModalOutside(e) {
+      if (e.target.id === 'modalOverlay') toggleModal();
+    }
+
+    // Optimized falling animation
     function startFallingRomance() {
-      const heartCount = 50; 
       const pool = [];
-      const letters = ['D', 'S'];
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
-      for (let i = 0; i < heartCount; i++) pool.push({ type: 'heart', val: '💗' });
-      letters.forEach(l => pool.push({ type: 'letter', val: l }));
+      // Create element pool
+      for (let i = 0; i < CONFIG.heartCount; i++) {
+        pool.push({ type: 'heart', val: '💗' });
+      }
+      CONFIG.letters.forEach(l => pool.push({ type: 'letter', val: l }));
       pool.sort(() => Math.random() - 0.5);
 
+      // Animate elements
       pool.forEach((item, index) => {
         const el = document.createElement('div');
         el.classList.add('falling-element', item.type === 'heart' ? 'falling-heart' : 'falling-letter');
         el.textContent = item.val;
-        const startX = Math.random() * screenWidth;
-        el.style.left = `${startX}px`;
-        el.style.fontSize = `${item.type === 'letter' ? 30 : 20}px`;
+        el.style.left = `${Math.random() * screenWidth}px`;
+
         document.body.appendChild(el);
 
-        el.animate([
-          { transform: `translate3d(0, 0, 0) scale(0.3)`, opacity: 0 },
-          { transform: `translate3d(${Math.random()*100}px, ${screenHeight/2}px, 0) scale(1)`, opacity: 1 },
-          { transform: `translate3d(${Math.random()*50}px, ${screenHeight + 100}px, 0) scale(0.8)`, opacity: 0 }
-        ], { duration: 5000 + Math.random()*3000, delay: index * 100, fill: 'forwards' }).onfinish = () => el.remove();
+        const startX = parseFloat(el.style.left);
+        const endX = startX + (Math.random() - 0.5) * 200;
+        const duration = CONFIG.fallingDuration.min + Math.random() * (CONFIG.fallingDuration.max - CONFIG.fallingDuration.min);
+
+        el.animate(
+          [
+            { transform: 'translate3d(0, 0, 0) scale(0.3)', opacity: 0 },
+            { transform: `translate3d(${endX - startX}px, ${screenHeight / 2}px, 0) scale(1)`, opacity: 1 },
+            { transform: `translate3d(${endX - startX + (Math.random() - 0.5) * 50}px, ${screenHeight + 100}px, 0) scale(0.8)`, opacity: 0 }
+          ],
+          {
+            duration: duration,
+            delay: index * 80,
+            fill: 'forwards',
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+          }
+        ).onfinish = () => el.remove();
       });
     }
 
     function triggerHeartsFromInitials() {
       const rect = document.getElementById('initials').getBoundingClientRect();
-      for (let i = 0; i < 10; i++) {
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top;
+
+      for (let i = 0; i < CONFIG.heartsBurstCount; i++) {
         const el = document.createElement('div');
         el.textContent = '💓';
         el.style.position = 'fixed';
-        el.style.left = `${rect.left + rect.width/2}px`;
-        el.style.top = `${rect.top}px`;
+        el.style.left = `${centerX}px`;
+        el.style.top = `${centerY}px`;
+        el.style.pointerEvents = 'none';
+        el.style.userSelect = 'none';
+
         document.body.appendChild(el);
-        el.animate([{transform: 'translateY(0) scale(1)', opacity: 1}, {transform: 'translateY(-200px) scale(0)', opacity: 0}], {duration: 1000}).onfinish = () => el.remove();
+
+        const angle = (Math.PI * 2 * i) / CONFIG.heartsBurstCount;
+        const distance = 150;
+        const offsetX = Math.cos(angle) * distance;
+        const offsetY = Math.sin(angle) * distance - 200;
+
+        el.animate(
+          [
+            { transform: 'translateY(0) scale(1)', opacity: 1 },
+            { transform: `translate(${offsetX}px, ${offsetY}px) scale(0)`, opacity: 0 }
+          ],
+          {
+            duration: CONFIG.heartsBurstDuration,
+            easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            fill: 'forwards'
+          }
+        ).onfinish = () => el.remove();
       }
     }
 
+    // Optimized timer update
     function updateTimers() {
-      const diff = new Date() - startDate;
+      const diff = Date.now() - CONFIG.startDate.getTime();
       const days = Math.floor(diff / 86400000);
       const h = Math.floor((diff / 3600000) % 24);
       const m = Math.floor((diff / 60000) % 60);
       const s = Math.floor((diff / 1000) % 60);
+
       document.getElementById('count').textContent = days;
       document.getElementById('liveTimerNode').textContent = `${days}д ${h}ч ${m}м ${s}с`;
     }
 
-    function toggleModal(e) { e.stopPropagation(); document.getElementById('modalOverlay').classList.toggle('active'); }
-    function closeModalOutside(e) { if (e.target.id === 'modalOverlay') toggleModal(e); }
+    // Initialization
+    function init() {
+      updateTimers();
+      updateTimerInterval = setInterval(updateTimers, CONFIG.updateInterval);
+      setupEventListeners();
+    }
 
-    setInterval(updateTimers, 1000);
-    updateTimers();
+    // Cleanup on unload
+    window.addEventListener('beforeunload', () => {
+      if (updateTimerInterval) clearInterval(updateTimerInterval);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    });
+
+    // Start app
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
