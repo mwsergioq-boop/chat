@@ -165,6 +165,35 @@
       transform: translateX(2px);
     }
 
+    /* Update Notification */
+    .update-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: linear-gradient(90deg, var(--accent-color), #ff69b4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      z-index: 300;
+      animation: slideDown 0.5s ease, slideUp 0.5s ease 3.5s forwards;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(0); }
+      to { transform: translateY(-100%); }
+    }
+
     /* Falling Elements */
     .falling-element {
       position: fixed;
@@ -213,6 +242,8 @@
       color: var(--text-color);
       animation: heartbeat 1.8s infinite alternate;
       line-height: 1;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     @keyframes heartbeat {
@@ -292,6 +323,7 @@
       color: rgba(255, 255, 255, 0.75);
       padding-left: 15px;
       margin-bottom: 20px;
+      margin-top: 0;
     }
 
     .close-btn {
@@ -312,13 +344,31 @@
       opacity: 0.9;
     }
 
+    /* Scrollbar styling */
+    .menu-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .menu-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .menu-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 46, 147, 0.2);
+      border-radius: 3px;
+    }
+
+    .menu-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 46, 147, 0.4);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .counter { font-size: clamp(85px, 20vw, 120px); }
       .avatar-container { top: 25px; left: 25px; }
       .info-btn { top: 25px; right: 25px; }
       .initials { bottom: 25px; }
-      .menu-content { width: 260px; }
+      .menu-content { width: 260px; padding: 40px 20px; }
     }
 
     @media (max-width: 450px) {
@@ -326,6 +376,7 @@
       .live-timer { font-size: 12px; letter-spacing: 2px; }
       .status-label { font-size: 10px; letter-spacing: 2px; }
       .menu-content { width: 240px; padding: 40px 16px; }
+      .update-banner { font-size: 13px; height: 45px; }
     }
 
     /* Accessibility */
@@ -335,6 +386,8 @@
   </style>
 </head>
 <body>
+
+  <div id="updateBanner"></div>
 
   <div class="avatar-container">
     <img src="https://i.ibb.co/gbzz23yg/IMG-1455.jpg" alt="Меню" class="avatar" onclick="toggleMenu()" role="button" tabindex="0">
@@ -361,12 +414,13 @@
 
   <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
     <div class="modal-content">
-      <h3 class="modal-title">V1.3b</h3>
+      <h3 class="modal-title">V1.4</h3>
       <ul class="modal-list">
-        <li>OPT</li>
-        <li>OTZV</li>
-        <li>preferes-reduced-motion</li>
-        <li>(a11y)</li>
+        <li>...</li>
+        <li>...</li>
+        <li>...</li>
+        <li>...</li>
+        <li>...</li>
       </ul>
       <button class="close-btn" onclick="toggleModal(event)">Понятно</button>
     </div>
@@ -387,24 +441,85 @@
     let updateTimerInterval = null;
     let animationFrameId = null;
 
-    // Event Listeners
+    // Service Worker и проверка обновлений
+    function checkForUpdates() {
+      // Генерируем хеш текущего HTML
+      const currentHash = generateHash(document.documentElement.outerHTML);
+      const storedHash = localStorage.getItem('chsdCodeHash');
+      const hasShownUpdate = sessionStorage.getItem('updateShown');
+
+      if (!storedHash) {
+        // Первый запуск
+        localStorage.setItem('chsdCodeHash', currentHash);
+        showUpdateBanner('1.4');
+        sessionStorage.setItem('updateShown', 'true');
+      } else if (currentHash !== storedHash && !hasShownUpdate) {
+        // Код обн��вился
+        localStorage.setItem('chsdCodeHash', currentHash);
+        showUpdateBanner('🔄');
+        sessionStorage.setItem('updateShown', 'true');
+      }
+    }
+
+    function generateHash(str) {
+      let hash = 0;
+      if (str.length === 0) return hash.toString();
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(36);
+    }
+
+    function showUpdateBanner(message) {
+      const banner = document.getElementById('updateBanner');
+      banner.textContent = message;
+      banner.classList.add('update-banner');
+    }
+
+    // Event Listeners Setup
     function setupEventListeners() {
       const avatar = document.querySelector('.avatar');
       const initials = document.getElementById('initials');
       const dividerLine = document.querySelector('.divider-line');
       const menuItems = document.querySelectorAll('.menu-item');
+      const menuOverlay = document.getElementById('menuOverlay');
 
       // Keyboard support
       avatar.addEventListener('keydown', (e) => e.key === 'Enter' && toggleMenu());
       dividerLine.addEventListener('keydown', (e) => e.key === 'Enter' && startFallingRomance());
       initials.addEventListener('keydown', (e) => e.key === 'Enter' && triggerHeartsFromInitials());
+
       menuItems.forEach(item => {
         item.addEventListener('keydown', (e) => e.key === 'Enter' && handleMenuItemClick(e));
+        item.addEventListener('click', handleMenuItemClick);
       });
+
+      // Close menu on escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
+          toggleMenu();
+        }
+      });
+
+      // Optimize for touch devices
+      if ('ontouchstart' in window) {
+        document.addEventListener('touchmove', (e) => {
+          if (e.target.closest('.menu-content') === null && 
+              e.target.closest('.avatar') === null &&
+              e.target.closest('.divider-line') === null) {
+            // Allow default behavior for most elements
+          }
+        }, { passive: true });
+      }
     }
 
     function handleMenuItemClick(e) {
-      console.log('Menu item:', e.target.textContent);
+      const item = e.currentTarget;
+      const text = item.textContent.trim();
+      console.log('Menu item clicked:', text);
+      toggleMenu();
       // Add menu item functionality here
     }
 
@@ -434,32 +549,38 @@
       CONFIG.letters.forEach(l => pool.push({ type: 'letter', val: l }));
       pool.sort(() => Math.random() - 0.5);
 
-      // Animate elements
+      // Animate elements with requestAnimationFrame optimization
       pool.forEach((item, index) => {
-        const el = document.createElement('div');
-        el.classList.add('falling-element', item.type === 'heart' ? 'falling-heart' : 'falling-letter');
-        el.textContent = item.val;
-        el.style.left = `${Math.random() * screenWidth}px`;
+        requestAnimationFrame(() => {
+          const el = document.createElement('div');
+          el.classList.add('falling-element', item.type === 'heart' ? 'falling-heart' : 'falling-letter');
+          el.textContent = item.val;
+          el.style.left = `${Math.random() * screenWidth}px`;
 
-        document.body.appendChild(el);
+          document.body.appendChild(el);
 
-        const startX = parseFloat(el.style.left);
-        const endX = startX + (Math.random() - 0.5) * 200;
-        const duration = CONFIG.fallingDuration.min + Math.random() * (CONFIG.fallingDuration.max - CONFIG.fallingDuration.min);
+          const startX = parseFloat(el.style.left);
+          const endX = startX + (Math.random() - 0.5) * 200;
+          const duration = CONFIG.fallingDuration.min + Math.random() * (CONFIG.fallingDuration.max - CONFIG.fallingDuration.min);
 
-        el.animate(
-          [
-            { transform: 'translate3d(0, 0, 0) scale(0.3)', opacity: 0 },
-            { transform: `translate3d(${endX - startX}px, ${screenHeight / 2}px, 0) scale(1)`, opacity: 1 },
-            { transform: `translate3d(${endX - startX + (Math.random() - 0.5) * 50}px, ${screenHeight + 100}px, 0) scale(0.8)`, opacity: 0 }
-          ],
-          {
-            duration: duration,
-            delay: index * 80,
-            fill: 'forwards',
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-          }
-        ).onfinish = () => el.remove();
+          const animation = el.animate(
+            [
+              { transform: 'translate3d(0, 0, 0) scale(0.3)', opacity: 0 },
+              { transform: `translate3d(${endX - startX}px, ${screenHeight / 2}px, 0) scale(1)`, opacity: 1 },
+              { transform: `translate3d(${endX - startX + (Math.random() - 0.5) * 50}px, ${screenHeight + 100}px, 0) scale(0.8)`, opacity: 0 }
+            ],
+            {
+              duration: duration,
+              delay: index * 80,
+              fill: 'forwards',
+              easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            }
+          );
+
+          animation.onfinish = () => {
+            el.remove();
+          };
+        });
       });
     }
 
@@ -469,32 +590,39 @@
       const centerY = rect.top;
 
       for (let i = 0; i < CONFIG.heartsBurstCount; i++) {
-        const el = document.createElement('div');
-        el.textContent = '💓';
-        el.style.position = 'fixed';
-        el.style.left = `${centerX}px`;
-        el.style.top = `${centerY}px`;
-        el.style.pointerEvents = 'none';
-        el.style.userSelect = 'none';
+        requestAnimationFrame(() => {
+          const el = document.createElement('div');
+          el.textContent = '💓';
+          el.style.position = 'fixed';
+          el.style.left = `${centerX}px`;
+          el.style.top = `${centerY}px`;
+          el.style.pointerEvents = 'none';
+          el.style.userSelect = 'none';
+          el.style.fontSize = '20px';
 
-        document.body.appendChild(el);
+          document.body.appendChild(el);
 
-        const angle = (Math.PI * 2 * i) / CONFIG.heartsBurstCount;
-        const distance = 150;
-        const offsetX = Math.cos(angle) * distance;
-        const offsetY = Math.sin(angle) * distance - 200;
+          const angle = (Math.PI * 2 * i) / CONFIG.heartsBurstCount;
+          const distance = 150;
+          const offsetX = Math.cos(angle) * distance;
+          const offsetY = Math.sin(angle) * distance - 200;
 
-        el.animate(
-          [
-            { transform: 'translateY(0) scale(1)', opacity: 1 },
-            { transform: `translate(${offsetX}px, ${offsetY}px) scale(0)`, opacity: 0 }
-          ],
-          {
-            duration: CONFIG.heartsBurstDuration,
-            easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-            fill: 'forwards'
-          }
-        ).onfinish = () => el.remove();
+          const animation = el.animate(
+            [
+              { transform: 'translateY(0) scale(1)', opacity: 1 },
+              { transform: `translate(${offsetX}px, ${offsetY}px) scale(0)`, opacity: 0 }
+            ],
+            {
+              duration: CONFIG.heartsBurstDuration,
+              easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+              fill: 'forwards'
+            }
+          );
+
+          animation.onfinish = () => {
+            el.remove();
+          };
+        });
       }
     }
 
@@ -512,15 +640,42 @@
 
     // Initialization
     function init() {
+      // Check for updates first
+      checkForUpdates();
+
+      // Initialize timers
       updateTimers();
       updateTimerInterval = setInterval(updateTimers, CONFIG.updateInterval);
+
+      // Setup event listeners
       setupEventListeners();
+
+      // Lazy load optimizations
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.willChange = 'auto';
+            }
+          });
+        });
+      }
     }
 
     // Cleanup on unload
     window.addEventListener('beforeunload', () => {
       if (updateTimerInterval) clearInterval(updateTimerInterval);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    });
+
+    // Prevent memory leaks on page hide
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && updateTimerInterval) {
+        clearInterval(updateTimerInterval);
+      } else if (!document.hidden && !updateTimerInterval) {
+        updateTimers();
+        updateTimerInterval = setInterval(updateTimers, CONFIG.updateInterval);
+      }
     });
 
     // Start app
