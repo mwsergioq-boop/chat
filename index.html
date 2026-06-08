@@ -30,6 +30,12 @@
       color: var(--text-color);
     }
 
+    body.dates-page {
+      overflow-y: auto;
+      justify-content: flex-start;
+      padding-top: 30px;
+    }
+
     /* Avatar */
     .avatar-container {
       position: fixed;
@@ -96,6 +102,43 @@
       background: rgba(255, 255, 255, 0.12);
       color: #fff;
       border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Back button */
+    .back-btn {
+      position: fixed;
+      top: 35px;
+      left: 35px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      z-index: 10;
+    }
+
+    body.dates-page .back-btn {
+      display: flex;
+    }
+
+    .back-btn:hover,
+    .back-btn:active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    body.dates-page .avatar-container,
+    body.dates-page .divider-line {
+      display: none;
     }
 
     /* Side Menu */
@@ -165,35 +208,6 @@
       transform: translateX(2px);
     }
 
-    /* Update Notification */
-    .update-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 50px;
-      background: linear-gradient(90deg, var(--accent-color), #ff69b4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      z-index: 300;
-      animation: slideDown 0.5s ease, slideUp 0.5s ease 3.5s forwards;
-      font-weight: 500;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-    }
-
-    @keyframes slideDown {
-      from { transform: translateY(-100%); }
-      to { transform: translateY(0); }
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(0); }
-      to { transform: translateY(-100%); }
-    }
-
     /* Falling Elements */
     .falling-element {
       position: fixed;
@@ -225,6 +239,10 @@
       align-items: center;
       pointer-events: none;
       z-index: 5;
+    }
+
+    body.dates-page .counter-wrapper {
+      display: none;
     }
 
     .status-label {
@@ -274,6 +292,10 @@
       padding: 5px;
     }
 
+    body.dates-page .initials {
+      display: none;
+    }
+
     .initials:active {
       color: rgba(255, 255, 255, 0.6);
     }
@@ -309,6 +331,8 @@
       width: 85%;
       max-width: 340px;
       color: #fff;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .modal-title {
@@ -344,6 +368,141 @@
       opacity: 0.9;
     }
 
+    /* Dates Page */
+    .dates-page-wrapper {
+      width: 100%;
+      max-width: 500px;
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      padding: 0 20px 50px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .dates-page-wrapper.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .dates-page-title {
+      font-size: 24px;
+      color: var(--accent-color);
+      text-align: center;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .dates-page-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.05) 0%, rgba(255, 46, 147, 0.02) 100%);
+      border: 1px solid rgba(255, 46, 147, 0.15);
+      border-radius: 16px;
+    }
+
+    .dates-page-form input {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 46, 147, 0.2);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .dates-page-form input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent-color);
+    }
+
+    .dates-page-form input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .add-date-btn {
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: opacity 0.3s ease;
+      margin-top: 5px;
+    }
+
+    .add-date-btn:hover {
+      opacity: 0.9;
+    }
+
+    .dates-page-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dates-page-item {
+      padding: 15px;
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.08) 0%, rgba(255, 46, 147, 0.03) 100%);
+      border: 1px solid rgba(255, 46, 147, 0.2);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .dates-page-item:hover {
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.12) 0%, rgba(255, 46, 147, 0.05) 100%);
+      border-color: rgba(255, 46, 147, 0.3);
+    }
+
+    .dates-page-item-text {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dates-page-item-name {
+      color: #fff;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .dates-page-item-date {
+      color: var(--accent-color);
+      font-size: 13px;
+    }
+
+    .dates-page-item-delete {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 18px;
+      transition: color 0.3s ease;
+      padding: 0;
+    }
+
+    .dates-page-item-delete:hover {
+      color: #ff6b6b;
+    }
+
+    .dates-page-empty {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.3);
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+
     /* Scrollbar styling */
     .menu-content::-webkit-scrollbar {
       width: 6px;
@@ -369,6 +528,7 @@
       .info-btn { top: 25px; right: 25px; }
       .initials { bottom: 25px; }
       .menu-content { width: 260px; padding: 40px 20px; }
+      .dates-page-wrapper { max-width: 100%; }
     }
 
     @media (max-width: 450px) {
@@ -376,7 +536,8 @@
       .live-timer { font-size: 12px; letter-spacing: 2px; }
       .status-label { font-size: 10px; letter-spacing: 2px; }
       .menu-content { width: 240px; padding: 40px 16px; }
-      .update-banner { font-size: 13px; height: 45px; }
+      .dates-page-title { font-size: 20px; }
+      .back-btn { width: 36px; height: 36px; }
     }
 
     /* Accessibility */
@@ -387,7 +548,7 @@
 </head>
 <body>
 
-  <div id="updateBanner"></div>
+  <button class="back-btn" onclick="backToMain()" aria-label="Вернуться назад">←</button>
 
   <div class="avatar-container">
     <img src="https://i.ibb.co/gbzz23yg/IMG-1455.jpg" alt="Меню" class="avatar" onclick="toggleMenu()" role="button" tabindex="0">
@@ -400,7 +561,7 @@
     <div class="menu-content" onclick="event.stopPropagation()">
       <div class="menu-item" role="button" tabindex="0">Галерея</div>
       <div class="menu-item" role="button" tabindex="0">Заметки</div>
-      <div class="menu-item" role="button" tabindex="0">Дата</div>
+      <div class="menu-item" role="button" tabindex="0" onclick="openDatesPage()">Дата</div>
     </div>
   </div>
 
@@ -412,15 +573,28 @@
 
   <div class="initials" id="initials" onclick="triggerHeartsFromInitials()" role="button" tabindex="0" title="Нажмите для сердечек">D & S</div>
 
+  <!-- Dates Page -->
+  <div class="dates-page-wrapper" id="datesPageWrapper">
+    <h2 class="dates-page-title">Важные даты</h2>
+    
+    <div class="dates-page-form">
+      <input type="text" id="dateNameInput" placeholder="Название даты" maxlength="30">
+      <input type="date" id="dateInput">
+      <button class="add-date-btn" onclick="addDate()">Добавить дату</button>
+    </div>
+
+    <div class="dates-page-list" id="datesList"></div>
+  </div>
+
   <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
     <div class="modal-content">
       <h3 class="modal-title">V1.4</h3>
       <ul class="modal-list">
-        <li>...</li>
-        <li>...</li>
-        <li>...</li>
-        <li>...</li>
-        <li>...</li>
+        <li>Оптимизация производительности</li>
+        <li>Улучшенная отзывчивость на мобильных</li>
+        <li>Легкое выдвижное меню слева</li>
+        <li>Управление важными датами</li>
+        <li>Лучшая оптимизация памяти</li>
       </ul>
       <button class="close-btn" onclick="toggleModal(event)">Понятно</button>
     </div>
@@ -439,43 +613,88 @@
     };
 
     let updateTimerInterval = null;
-    let animationFrameId = null;
+    let currentPage = 'main'; // 'main' or 'dates'
 
-    // Service Worker и проверка обновлений
-    function checkForUpdates() {
-      // Генерируем хеш текущего HTML
-      const currentHash = generateHash(document.documentElement.outerHTML);
-      const storedHash = localStorage.getItem('chsdCodeHash');
-      const hasShownUpdate = sessionStorage.getItem('updateShown');
-
-      if (!storedHash) {
-        // Первый запуск
-        localStorage.setItem('chsdCodeHash', currentHash);
-        showUpdateBanner('1.4');
-        sessionStorage.setItem('updateShown', 'true');
-      } else if (currentHash !== storedHash && !hasShownUpdate) {
-        // Код обн��вился
-        localStorage.setItem('chsdCodeHash', currentHash);
-        showUpdateBanner('🔄');
-        sessionStorage.setItem('updateShown', 'true');
-      }
+    // Page Management
+    function openDatesPage() {
+      toggleMenu();
+      currentPage = 'dates';
+      document.body.classList.add('dates-page');
+      document.getElementById('datesPageWrapper').classList.add('active');
+      renderDates();
     }
 
-    function generateHash(str) {
-      let hash = 0;
-      if (str.length === 0) return hash.toString();
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-      }
-      return Math.abs(hash).toString(36);
+    function backToMain() {
+      currentPage = 'main';
+      document.body.classList.remove('dates-page');
+      document.getElementById('datesPageWrapper').classList.remove('active');
     }
 
-    function showUpdateBanner(message) {
-      const banner = document.getElementById('updateBanner');
-      banner.textContent = message;
-      banner.classList.add('update-banner');
+    // Dates Management
+    function loadDates() {
+      const dates = localStorage.getItem('chsdDates');
+      return dates ? JSON.parse(dates) : [];
+    }
+
+    function saveDates(dates) {
+      localStorage.setItem('chsdDates', JSON.stringify(dates));
+    }
+
+    function addDate() {
+      const nameInput = document.getElementById('dateNameInput');
+      const dateInput = document.getElementById('dateInput');
+      const name = nameInput.value.trim();
+      const date = dateInput.value;
+
+      if (!name || !date) {
+        alert('Пожалуйста, заполните оба поля');
+        return;
+      }
+
+      const dates = loadDates();
+      dates.push({ name, date, id: Date.now() });
+      saveDates(dates);
+
+      nameInput.value = '';
+      dateInput.value = '';
+      renderDates();
+    }
+
+    function deleteDate(id) {
+      const dates = loadDates();
+      const filtered = dates.filter(d => d.id !== id);
+      saveDates(filtered);
+      renderDates();
+    }
+
+    function renderDates() {
+      const dates = loadDates();
+      const datesList = document.getElementById('datesList');
+      datesList.innerHTML = '';
+
+      dates.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      if (dates.length === 0) {
+        datesList.innerHTML = '<div class="dates-page-empty">📌 Пока нет добавленных дат</div>';
+        return;
+      }
+
+      dates.forEach(date => {
+        const dateObj = new Date(date.date + 'T00:00:00');
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = dateObj.toLocaleDateString('ru-RU', options);
+
+        const item = document.createElement('div');
+        item.className = 'dates-page-item';
+        item.innerHTML = `
+          <div class="dates-page-item-text">
+            <div class="dates-page-item-name">${date.name}</div>
+            <div class="dates-page-item-date">${formattedDate}</div>
+          </div>
+          <button class="dates-page-item-delete" onclick="deleteDate(${date.id})">✕</button>
+        `;
+        datesList.appendChild(item);
+      });
     }
 
     // Event Listeners Setup
@@ -485,6 +704,8 @@
       const dividerLine = document.querySelector('.divider-line');
       const menuItems = document.querySelectorAll('.menu-item');
       const menuOverlay = document.getElementById('menuOverlay');
+      const dateNameInput = document.getElementById('dateNameInput');
+      const dateInput = document.getElementById('dateInput');
 
       // Keyboard support
       avatar.addEventListener('keydown', (e) => e.key === 'Enter' && toggleMenu());
@@ -496,11 +717,24 @@
         item.addEventListener('click', handleMenuItemClick);
       });
 
-      // Close menu on escape
+      // Close menu/page on escape
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && menuOverlay.classList.contains('active')) {
-          toggleMenu();
+        if (e.key === 'Escape') {
+          if (currentPage === 'dates') {
+            backToMain();
+          } else if (menuOverlay.classList.contains('active')) {
+            toggleMenu();
+          }
         }
+      });
+
+      // Add date on Enter
+      dateInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addDate();
+      });
+
+      dateNameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addDate();
       });
 
       // Optimize for touch devices
@@ -509,7 +743,7 @@
           if (e.target.closest('.menu-content') === null && 
               e.target.closest('.avatar') === null &&
               e.target.closest('.divider-line') === null) {
-            // Allow default behavior for most elements
+            // Allow default behavior
           }
         }, { passive: true });
       }
@@ -519,8 +753,10 @@
       const item = e.currentTarget;
       const text = item.textContent.trim();
       console.log('Menu item clicked:', text);
-      toggleMenu();
-      // Add menu item functionality here
+      
+      if (text !== 'Дата') {
+        toggleMenu();
+      }
     }
 
     function toggleMenu() {
@@ -542,14 +778,12 @@
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
-      // Create element pool
       for (let i = 0; i < CONFIG.heartCount; i++) {
         pool.push({ type: 'heart', val: '💗' });
       }
       CONFIG.letters.forEach(l => pool.push({ type: 'letter', val: l }));
       pool.sort(() => Math.random() - 0.5);
 
-      // Animate elements with requestAnimationFrame optimization
       pool.forEach((item, index) => {
         requestAnimationFrame(() => {
           const el = document.createElement('div');
@@ -577,9 +811,7 @@
             }
           );
 
-          animation.onfinish = () => {
-            el.remove();
-          };
+          animation.onfinish = () => el.remove();
         });
       });
     }
@@ -619,53 +851,35 @@
             }
           );
 
-          animation.onfinish = () => {
-            el.remove();
-          };
+          animation.onfinish = () => el.remove();
         });
       }
     }
 
     // Optimized timer update
     function updateTimers() {
-      const diff = Date.now() - CONFIG.startDate.getTime();
-      const days = Math.floor(diff / 86400000);
-      const h = Math.floor((diff / 3600000) % 24);
-      const m = Math.floor((diff / 60000) % 60);
-      const s = Math.floor((diff / 1000) % 60);
+      if (currentPage === 'main') {
+        const diff = Date.now() - CONFIG.startDate.getTime();
+        const days = Math.floor(diff / 86400000);
+        const h = Math.floor((diff / 3600000) % 24);
+        const m = Math.floor((diff / 60000) % 60);
+        const s = Math.floor((diff / 1000) % 60);
 
-      document.getElementById('count').textContent = days;
-      document.getElementById('liveTimerNode').textContent = `${days}д ${h}ч ${m}м ${s}с`;
+        document.getElementById('count').textContent = days;
+        document.getElementById('liveTimerNode').textContent = `${days}д ${h}ч ${m}м ${s}с`;
+      }
     }
 
     // Initialization
     function init() {
-      // Check for updates first
-      checkForUpdates();
-
-      // Initialize timers
       updateTimers();
       updateTimerInterval = setInterval(updateTimers, CONFIG.updateInterval);
-
-      // Setup event listeners
       setupEventListeners();
-
-      // Lazy load optimizations
-      if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.style.willChange = 'auto';
-            }
-          });
-        });
-      }
     }
 
     // Cleanup on unload
     window.addEventListener('beforeunload', () => {
       if (updateTimerInterval) clearInterval(updateTimerInterval);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
 
     // Prevent memory leaks on page hide
