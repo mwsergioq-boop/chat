@@ -12,6 +12,7 @@
       --text-color: #ffffff;
       --subtext-color: rgba(255, 255, 255, 0.5);
       --accent-color: #ff2e93;
+      --accent-light: #ff69b4;
     }
 
     * { box-sizing: border-box; }
@@ -33,7 +34,8 @@
     body.dates-page {
       overflow-y: auto;
       justify-content: flex-start;
-      padding-top: 30px;
+      padding-top: 70px;
+      padding-bottom: 30px;
     }
 
     /* Avatar */
@@ -368,14 +370,14 @@
       opacity: 0.9;
     }
 
-    /* Dates Page */
+    /* ===== DATES PAGE STYLING ===== */
     .dates-page-wrapper {
       width: 100%;
-      max-width: 500px;
+      max-width: 550px;
       display: none;
       flex-direction: column;
-      gap: 20px;
-      padding: 0 20px 50px;
+      gap: 28px;
+      padding: 0 15px 50px;
       animation: fadeIn 0.4s ease;
     }
 
@@ -384,140 +386,227 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .dates-page-title {
-      font-size: 24px;
-      color: var(--accent-color);
+    /* Header */
+    .dates-header {
       text-align: center;
-      font-weight: 600;
       margin: 0;
     }
 
-    .dates-page-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 20px;
-      background: linear-gradient(135deg, rgba(255, 46, 147, 0.05) 0%, rgba(255, 46, 147, 0.02) 100%);
-      border: 1px solid rgba(255, 46, 147, 0.15);
-      border-radius: 16px;
+    .dates-header-title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 8px 0;
+      letter-spacing: 0.5px;
     }
 
-    .dates-page-form input {
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 46, 147, 0.2);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 14px;
+    .dates-header-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      margin: 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Form Container */
+    .dates-form-container {
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.04) 0%, rgba(255, 46, 147, 0.01) 100%);
+      border: 1px solid rgba(255, 46, 147, 0.12);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       transition: all 0.3s ease;
     }
 
-    .dates-page-form input:focus {
+    .dates-form-container:focus-within {
+      border-color: rgba(255, 46, 147, 0.25);
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.08) 0%, rgba(255, 46, 147, 0.03) 100%);
+    }
+
+    .dates-form-input {
+      padding: 13px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 46, 147, 0.15);
+      border-radius: 12px;
+      color: var(--text-color);
+      font-size: 15px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .dates-form-input::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .dates-form-input:focus {
       outline: none;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
       border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(255, 46, 147, 0.1);
     }
 
-    .dates-page-form input::placeholder {
-      color: rgba(255, 255, 255, 0.4);
+    .dates-form-input[type="date"] {
+      cursor: pointer;
     }
 
-    .add-date-btn {
-      padding: 12px;
-      background: var(--accent-color);
+    .dates-form-input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    /* Add Button */
+    .dates-add-btn {
+      padding: 13px 20px;
+      background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       color: white;
       cursor: pointer;
       font-weight: 600;
-      font-size: 14px;
-      transition: opacity 0.3s ease;
-      margin-top: 5px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(255, 46, 147, 0.25);
+      margin-top: 4px;
     }
 
-    .add-date-btn:hover {
-      opacity: 0.9;
+    .dates-add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 46, 147, 0.35);
     }
 
-    .dates-page-list {
+    .dates-add-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Dates List */
+    .dates-list-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .dates-page-item {
-      padding: 15px;
+    .dates-list-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 0;
+      padding: 0 4px;
+    }
+
+    .dates-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Date Item */
+    .date-item {
+      padding: 16px;
       background: linear-gradient(135deg, rgba(255, 46, 147, 0.08) 0%, rgba(255, 46, 147, 0.03) 100%);
-      border: 1px solid rgba(255, 46, 147, 0.2);
-      border-radius: 12px;
+      border: 1px solid rgba(255, 46, 147, 0.15);
+      border-radius: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default;
     }
 
-    .dates-page-item:hover {
-      background: linear-gradient(135deg, rgba(255, 46, 147, 0.12) 0%, rgba(255, 46, 147, 0.05) 100%);
-      border-color: rgba(255, 46, 147, 0.3);
+    .date-item:hover {
+      background: linear-gradient(135deg, rgba(255, 46, 147, 0.12) 0%, rgba(255, 46, 147, 0.06) 100%);
+      border-color: rgba(255, 46, 147, 0.25);
+      transform: translateX(4px);
     }
 
-    .dates-page-item-text {
+    .date-item-content {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex: 1;
+      min-width: 0;
     }
 
-    .dates-page-item-name {
-      color: #fff;
+    .date-item-name {
+      color: var(--text-color);
       font-weight: 500;
       font-size: 15px;
+      letter-spacing: 0.3px;
+      word-break: break-word;
     }
 
-    .dates-page-item-date {
+    .date-item-date {
       color: var(--accent-color);
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
-    .dates-page-item-delete {
-      background: transparent;
+    .date-item-btn {
+      background: none;
       border: none;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.4);
       cursor: pointer;
-      font-size: 18px;
-      transition: color 0.3s ease;
-      padding: 0;
+      font-size: 20px;
+      padding: 4px 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      flex-shrink: 0;
     }
 
-    .dates-page-item-delete:hover {
+    .date-item-btn:hover {
       color: #ff6b6b;
+      transform: scale(1.1);
     }
 
-    .dates-page-empty {
+    /* Empty State */
+    .dates-empty {
       text-align: center;
-      color: rgba(255, 255, 255, 0.3);
-      padding: 40px 20px;
-      font-size: 14px;
+      padding: 60px 20px;
+      color: rgba(255, 255, 255, 0.25);
     }
 
-    /* Scrollbar styling */
-    .menu-content::-webkit-scrollbar {
-      width: 6px;
+    .dates-empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
     }
 
-    .menu-content::-webkit-scrollbar-track {
+    .dates-empty-text {
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
       background: transparent;
     }
 
-    .menu-content::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb {
       background: rgba(255, 46, 147, 0.2);
-      border-radius: 3px;
+      border-radius: 4px;
     }
 
-    .menu-content::-webkit-scrollbar-thumb:hover {
+    ::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 46, 147, 0.4);
     }
 
@@ -526,18 +615,25 @@
       .counter { font-size: clamp(85px, 20vw, 120px); }
       .avatar-container { top: 25px; left: 25px; }
       .info-btn { top: 25px; right: 25px; }
+      .back-btn { top: 25px; left: 25px; }
       .initials { bottom: 25px; }
-      .menu-content { width: 260px; padding: 40px 20px; }
+      .menu-content { width: 260px; }
       .dates-page-wrapper { max-width: 100%; }
+      .dates-header-title { font-size: 26px; }
     }
 
-    @media (max-width: 450px) {
-      .counter { font-size: clamp(70px, 18vw, 100px); }
-      .live-timer { font-size: 12px; letter-spacing: 2px; }
-      .status-label { font-size: 10px; letter-spacing: 2px; }
-      .menu-content { width: 240px; padding: 40px 16px; }
-      .dates-page-title { font-size: 20px; }
-      .back-btn { width: 36px; height: 36px; }
+    @media (max-width: 480px) {
+      body.dates-page {
+        padding-top: 60px;
+      }
+
+      .dates-header-title { font-size: 22px; }
+      .dates-form-container { padding: 18px; }
+      .dates-form-input { padding: 11px 14px; font-size: 14px; }
+      .date-item { padding: 14px; }
+      .date-item-name { font-size: 14px; }
+      .dates-empty { padding: 40px 15px; }
+      .dates-empty-icon { font-size: 40px; }
     }
 
     /* Accessibility */
@@ -575,26 +671,32 @@
 
   <!-- Dates Page -->
   <div class="dates-page-wrapper" id="datesPageWrapper">
-    <h2 class="dates-page-title">Важные даты</h2>
+    <div class="dates-header">
+      <h1 class="dates-header-title">важные даты</h1>
+      <p class="dates-header-subtitle">самые важные моменты</p>
+    </div>
     
-    <div class="dates-page-form">
-      <input type="text" id="dateNameInput" placeholder="Название даты" maxlength="30">
-      <input type="date" id="dateInput">
-      <button class="add-date-btn" onclick="addDate()">Добавить дату</button>
+    <div class="dates-form-container">
+      <input type="text" id="dateNameInput" class="dates-form-input" placeholder="Название даты" maxlength="30">
+      <input type="date" id="dateInput" class="dates-form-input">
+      <button class="dates-add-btn" onclick="addDate()">Добавить</button>
     </div>
 
-    <div class="dates-page-list" id="datesList"></div>
+    <div class="dates-list-container">
+      <h3 class="dates-list-title">Ваши даты</h3>
+      <div class="dates-list" id="datesList"></div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
     <div class="modal-content">
-      <h3 class="modal-title">V1.4</h3>
+      <h3 class="modal-title">V1.5</h3>
       <ul class="modal-list">
-        <li>Оптимизация производительности</li>
-        <li>Улучшенная отзывчивость на мобильных</li>
-        <li>Легкое выдвижное меню слева</li>
-        <li>Управление важными датами</li>
-        <li>Лучшая оптимизация памяти</li>
+        <li>OPT</li>
+        <li>iptin - apple (11-17)</li>
+        <li>....</li>
+        <li>dateOPT</li>
+        <li>IPT</li>
       </ul>
       <button class="close-btn" onclick="toggleModal(event)">Понятно</button>
     </div>
@@ -613,7 +715,7 @@
     };
 
     let updateTimerInterval = null;
-    let currentPage = 'main'; // 'main' or 'dates'
+    let currentPage = 'main';
 
     // Page Management
     function openDatesPage() {
@@ -622,6 +724,7 @@
       document.body.classList.add('dates-page');
       document.getElementById('datesPageWrapper').classList.add('active');
       renderDates();
+      document.getElementById('dateNameInput').focus();
     }
 
     function backToMain() {
@@ -647,7 +750,6 @@
       const date = dateInput.value;
 
       if (!name || !date) {
-        alert('Пожалуйста, заполните оба поля');
         return;
       }
 
@@ -658,6 +760,7 @@
       nameInput.value = '';
       dateInput.value = '';
       renderDates();
+      nameInput.focus();
     }
 
     function deleteDate(id) {
@@ -672,10 +775,10 @@
       const datesList = document.getElementById('datesList');
       datesList.innerHTML = '';
 
-      dates.sort((a, b) => new Date(a.date) - new Date(b.date));
+      dates.sort((a, b) => new Date(a.date + 'T00:00:00') - new Date(b.date + 'T00:00:00'));
 
       if (dates.length === 0) {
-        datesList.innerHTML = '<div class="dates-page-empty">📌 Пока нет добавленных дат</div>';
+        datesList.innerHTML = '<div class="dates-empty"><div class="dates-empty-icon">📌</div><div class="dates-empty-text">добавь первую дату</div></div>';
         return;
       }
 
@@ -685,19 +788,19 @@
         const formattedDate = dateObj.toLocaleDateString('ru-RU', options);
 
         const item = document.createElement('div');
-        item.className = 'dates-page-item';
+        item.className = 'date-item';
         item.innerHTML = `
-          <div class="dates-page-item-text">
-            <div class="dates-page-item-name">${date.name}</div>
-            <div class="dates-page-item-date">${formattedDate}</div>
+          <div class="date-item-content">
+            <div class="date-item-name">${date.name}</div>
+            <div class="date-item-date">${formattedDate}</div>
           </div>
-          <button class="dates-page-item-delete" onclick="deleteDate(${date.id})">✕</button>
+          <button class="date-item-btn" onclick="deleteDate(${date.id})" title="Удалить дату">×</button>
         `;
         datesList.appendChild(item);
       });
     }
 
-    // Event Listeners Setup
+    // Event Listeners
     function setupEventListeners() {
       const avatar = document.querySelector('.avatar');
       const initials = document.getElementById('initials');
@@ -707,7 +810,6 @@
       const dateNameInput = document.getElementById('dateNameInput');
       const dateInput = document.getElementById('dateInput');
 
-      // Keyboard support
       avatar.addEventListener('keydown', (e) => e.key === 'Enter' && toggleMenu());
       dividerLine.addEventListener('keydown', (e) => e.key === 'Enter' && startFallingRomance());
       initials.addEventListener('keydown', (e) => e.key === 'Enter' && triggerHeartsFromInitials());
@@ -717,7 +819,6 @@
         item.addEventListener('click', handleMenuItemClick);
       });
 
-      // Close menu/page on escape
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (currentPage === 'dates') {
@@ -728,7 +829,6 @@
         }
       });
 
-      // Add date on Enter
       dateInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') addDate();
       });
@@ -737,22 +837,14 @@
         if (e.key === 'Enter') addDate();
       });
 
-      // Optimize for touch devices
       if ('ontouchstart' in window) {
-        document.addEventListener('touchmove', (e) => {
-          if (e.target.closest('.menu-content') === null && 
-              e.target.closest('.avatar') === null &&
-              e.target.closest('.divider-line') === null) {
-            // Allow default behavior
-          }
-        }, { passive: true });
+        document.addEventListener('touchmove', () => {}, { passive: true });
       }
     }
 
     function handleMenuItemClick(e) {
       const item = e.currentTarget;
       const text = item.textContent.trim();
-      console.log('Menu item clicked:', text);
       
       if (text !== 'Дата') {
         toggleMenu();
@@ -772,7 +864,7 @@
       if (e.target.id === 'modalOverlay') toggleModal();
     }
 
-    // Optimized falling animation
+    // Animations
     function startFallingRomance() {
       const pool = [];
       const screenWidth = window.innerWidth;
@@ -856,7 +948,7 @@
       }
     }
 
-    // Optimized timer update
+    // Timer
     function updateTimers() {
       if (currentPage === 'main') {
         const diff = Date.now() - CONFIG.startDate.getTime();
@@ -870,19 +962,17 @@
       }
     }
 
-    // Initialization
+    // Init
     function init() {
       updateTimers();
       updateTimerInterval = setInterval(updateTimers, CONFIG.updateInterval);
       setupEventListeners();
     }
 
-    // Cleanup on unload
     window.addEventListener('beforeunload', () => {
       if (updateTimerInterval) clearInterval(updateTimerInterval);
     });
 
-    // Prevent memory leaks on page hide
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && updateTimerInterval) {
         clearInterval(updateTimerInterval);
@@ -892,7 +982,6 @@
       }
     });
 
-    // Start app
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
     } else {
