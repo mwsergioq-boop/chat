@@ -3,27 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>test</title>
+    <title>CDS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- Подключение CSS -->
-    <link rel="stylesheet" href="style.css">
+        body {
+            height: 100vh;
+            background: #000;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .counter {
+            font-size: clamp(6rem, 22vw, 14rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            margin-bottom: 0.2rem;
+            animation: fadeIn 2s ease forwards;
+        }
+
+        .days {
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            font-weight: 300;
+            opacity: 0.75;
+            letter-spacing: 0.05em;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.4) translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Лёгкая пульсация цифр */
+        .counter {
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+    </style>
 </head>
 <body>
-
-    <div class="card">
-        <h1>tty</h1>
-        <p>test</p>
-
-        <button onclick="showMessage()">
-            clickssj
-        </button>
-    </div>
+    <div class="counter" id="counter">0</div>
+    <div class="days">дней</div>
 
     <script>
-        function showMessage() {
-            alert("yes!");
-        }
-    </script>
+        // ========== ИЗМЕНИ ДАТУ ЗДЕСЬ ==========
+        const startDate = new Date('2023-06-15');   // ←←←←←←←←←←←←←←←←←←←←
+        // ======================================
 
+        function updateCounter() {
+            const now = new Date();
+            const diffTime = Math.abs(now - startDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            const counterEl = document.getElementById('counter');
+            animateCounter(counterEl, diffDays);
+        }
+
+        function animateCounter(element, target) {
+            let start = 0;
+            const duration = 1800;
+            const startTime = performance.now();
+
+            function step(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const value = Math.floor(progress * (target - start) + start);
+                element.textContent = value.toLocaleString('ru-RU');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    element.textContent = target.toLocaleString('ru-RU');
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // Запуск
+        window.onload = () => {
+            updateCounter();
+            
+            // Обновление каждый день
+            setInterval(() => {
+                const now = new Date();
+                if (now.getHours() === 0 && now.getMinutes() < 2) {
+                    updateCounter();
+                }
+            }, 60000);
+        };
+    </script>
 </body>
 </html>
