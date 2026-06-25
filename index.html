@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Days</title>
+    <title>DCD</title>
     <style>
         * {
             margin: 0;
@@ -52,9 +52,19 @@
             font-family: 'Consolas', 'Courier New', 'Lucida Console', 'Monaco', 'Menlo', monospace;
         }
         
+        .label {
+            font-size: 5vw;
+            opacity: 0.6;
+            margin-top: 15px;
+            letter-spacing: 3px;
+        }
+        
         @media (min-width: 600px) {
             .days {
                 font-size: 220px;
+            }
+            .label {
+                font-size: 36px;
             }
         }
     </style>
@@ -62,16 +72,17 @@
 <body>
     <div class="container">
         <div class="days" id="days">000</div>
+        <div class="label">ДНЕЙ</div>
     </div>
 
     <script>
-        // ========== ДАТА УСТАНОВЛЕНА ==========
-        const targetDate = new Date('2026-03-29 23:59:59').getTime();
-        // ======================================
+        // ========== ДАТА НАЧАЛА ==========
+        const startDate = new Date('2026-03-29 00:00:00').getTime();
+        // =================================
 
-        function updateCountdown() {
+        function updateCounter() {
             const now = new Date().getTime();
-            const distance = targetDate - now;
+            const distance = now - startDate;  // <-- теперь от даты
             
             const daysEl = document.getElementById('days');
             
@@ -84,8 +95,8 @@
             daysEl.textContent = days;
         }
         
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
+        setInterval(updateCounter, 1000);
+        updateCounter();
     </script>
 </body>
 </html>
