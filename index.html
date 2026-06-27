@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
+            background: #000;
             color: #e2e8f0;
             height: 100vh;
             display: flex;
@@ -17,23 +17,35 @@
             overflow: hidden;
         }
         .header {
-            background: #1e2937;
-            padding: 15px 20px;
+            background: #0a0a0a;
+            padding: 14px 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            border-bottom: 1px solid #334155;
+            gap: 12px;
+            border-bottom: 1px solid #222;
+            flex-shrink: 0;
         }
         .dot {
-            width: 24px;
-            height: 24px;
+            width: 16px;
+            height: 16px;
             background: #22c55e;
             border-radius: 50%;
-            box-shadow: 0 0 12px #22c55e, 0 0 24px rgba(34, 197, 94, 0.6);
+            box-shadow: 0 0 12px #22c55e,
+                        0 0 22px rgba(34, 197, 94, 0.8);
         }
-        .country { font-size: 1.5rem; font-weight: 600; color: #22c55e; }
-        .coords { font-size: 0.9rem; color: #94a3b8; }
-        #map { flex: 1; width: 100%; }
+        .country {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #22c55e;
+        }
+        .coords {
+            font-size: 0.85rem;
+            color: #555;
+        }
+        #map {
+            flex: 1;
+            background: #000;
+        }
     </style>
 </head>
 <body>
@@ -44,49 +56,57 @@
             <div class="coords" id="coords"></div>
         </div>
     </div>
+    
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         let map, marker;
-        
-        function initMap(lat, lng) {
-            if (!map) {
-                map = L.map('map').setView([lat, lng], 15);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-                
-                const greenIcon = L.divIcon({
-                    html: `<div style="width:28px;height:28px;background:#22c55e;border-radius:50%;border:3px solid white;box-shadow:0 0 15px #22c55e;"></div>`,
-                    iconSize: [28, 28],
-                    iconAnchor: [14, 14]
-                });
-                marker = L.marker([lat, lng], {icon: greenIcon}).addTo(map);
-            } else {
-                map.setView([lat, lng], 15);
-                marker.setLatLng([lat, lng]);
-            }
-        }
-        
+
         async function getCountry(lat, lng) {
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ru`);
                 const data = await res.json();
-                return data.address?.country || "Неизвестная страна";
+                return data.address?.country || "Неизвестно";
             } catch(e) { return "Чехия"; }
         }
-        
-        navigator.geolocation.getCurrentPosition(async pos => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
+
+        function initMap(lat, lng) {
+            if (map) {
+                map.setView([lat, lng], 15);
+                marker.setLatLng([lat, lng]);
+                return;
+            }
+
+            map = L.map('map', { attributionControl: false }).setView([lat, lng], 15);
             
-            const country = await getCountry(lat, lng);
-            document.getElementById('country').textContent = `• ${country}`;
-            document.getElementById('coords').textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
-            
-            initMap(lat, lng);
-        }, () => {
-            alert("Разрешите доступ к геолокации");
-        }, { enableHighAccuracy: true });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(map);
+
+            const greenIcon = L.divIcon({
+                html: `<div style="width:34px;height:34px;background:#22c55e;border-radius:50%;border:4px solid white;box-shadow:0 0 20px #22c55e;"></div>`,
+                iconSize: [34, 34],
+                iconAnchor: [17, 17]
+            });
+
+            marker = L.marker([lat, lng], {icon: greenIcon}).addTo(map);
+        }
+
+        window.onload = () => {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                
+                const country = await getCountry(lat, lng);
+                document.getElementById('country').textContent = `• ${country}`;
+                document.getElementById('coords').textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+                
+                initMap(lat, lng);
+            }, () => {
+                document.getElementById('country').textContent = "• Доступ запрещён";
+            }, { enableHighAccuracy: true });
+        };
     </script>
 </body>
 </html>
