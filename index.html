@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моё Местоположение</title>
+    <title>Дни</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000;
-            color: #e2e8f0;
+            color: #fff;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -51,29 +51,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            gap: 8px;
-            text-align: center;
         }
         
         .days {
-            font-size: 6.5rem;
+            font-size: 9rem;
             font-weight: 700;
-            color: #22c55e;
+            color: #ffffff;
             line-height: 1;
-            letter-spacing: -4px;
-        }
-        
-        .label {
-            font-size: 1.1rem;
-            color: #555;
-            margin-top: 10px;
-        }
-        
-        .coords {
-            font-size: 0.9rem;
-            color: #444;
-            margin-top: 20px;
+            letter-spacing: -6px;
         }
     </style>
 </head>
@@ -85,47 +70,32 @@
     
     <div class="main">
         <div class="days" id="days">0</div>
-        <div class="label">дней с 29.02.2026</div>
-        <div class="coords" id="coords"></div>
     </div>
 
     <script>
-        // Расчёт дней с 29 февраля 2026
         function calculateDays() {
-            const startDate = new Date(2026, 1, 29); // 2026-02-29
+            const start = new Date(2026, 1, 29); // 29 февраля 2026
             const today = new Date();
-            
-            const diffTime = Math.abs(today - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            document.getElementById('days').textContent = diffDays;
+            const diff = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
+            document.getElementById('days').textContent = diff;
         }
 
-        async function getCountry(lat, lng) {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ru`);
-                const data = await res.json();
-                return data.address?.country || "Неизвестно";
-            } catch(e) {
-                return "Чехия";
-            }
-        }
-
+        // Геолокация для страны
         navigator.geolocation.getCurrentPosition(async (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            
-            const country = await getCountry(lat, lng);
-            document.getElementById('country').textContent = `• ${country}`;
-            document.getElementById('coords').textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
+                const data = await res.json();
+                const country = data.address?.country || "Чехия";
+                document.getElementById('country').textContent = `• ${country}`;
+            } catch(e) {
+                document.getElementById('country').textContent = "• Чехия";
+            }
         }, () => {
-            document.getElementById('country').textContent = "• Местоположение";
+            document.getElementById('country').textContent = "• Чехия";
         });
 
-        // Запускаем счётчик
         calculateDays();
-        // Обновляем каждые сутки (на всякий случай)
-        setInterval(calculateDays, 600000); // каждые 10 минут
+        setInterval(calculateDays, 600000); // обновление каждые 10 минут
     </script>
 </body>
 </html>
