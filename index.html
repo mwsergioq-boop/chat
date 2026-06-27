@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Моё Местоположение</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000;
@@ -16,15 +20,17 @@
             flex-direction: column;
             overflow: hidden;
         }
+        
         .header {
             background: #0a0a0a;
-            padding: 14px 20px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid #222;
             flex-shrink: 0;
         }
+        
         .dot {
             width: 16px;
             height: 16px;
@@ -33,80 +39,93 @@
             box-shadow: 0 0 12px #22c55e,
                         0 0 22px rgba(34, 197, 94, 0.8);
         }
+        
         .country {
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 600;
             color: #22c55e;
         }
-        .coords {
-            font-size: 0.85rem;
-            color: #555;
-        }
-        #map {
+        
+        .main {
             flex: 1;
-            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+        
+        .days {
+            font-size: 6.5rem;
+            font-weight: 700;
+            color: #22c55e;
+            line-height: 1;
+            letter-spacing: -4px;
+        }
+        
+        .label {
+            font-size: 1.1rem;
+            color: #555;
+            margin-top: 10px;
+        }
+        
+        .coords {
+            font-size: 0.9rem;
+            color: #444;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="dot"></div>
-        <div>
-            <div class="country" id="country">Определяем...</div>
-            <div class="coords" id="coords"></div>
-        </div>
+        <div class="country" id="country">Определяем...</div>
     </div>
     
-    <div id="map"></div>
+    <div class="main">
+        <div class="days" id="days">0</div>
+        <div class="label">дней с 29.02.2026</div>
+        <div class="coords" id="coords"></div>
+    </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        let map, marker;
+        // Расчёт дней с 29 февраля 2026
+        function calculateDays() {
+            const startDate = new Date(2026, 1, 29); // 2026-02-29
+            const today = new Date();
+            
+            const diffTime = Math.abs(today - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('days').textContent = diffDays;
+        }
 
         async function getCountry(lat, lng) {
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ru`);
                 const data = await res.json();
                 return data.address?.country || "Неизвестно";
-            } catch(e) { return "Чехия"; }
-        }
-
-        function initMap(lat, lng) {
-            if (map) {
-                map.setView([lat, lng], 15);
-                marker.setLatLng([lat, lng]);
-                return;
+            } catch(e) {
+                return "Чехия";
             }
-
-            map = L.map('map', { attributionControl: false }).setView([lat, lng], 15);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19
-            }).addTo(map);
-
-            const greenIcon = L.divIcon({
-                html: `<div style="width:34px;height:34px;background:#22c55e;border-radius:50%;border:4px solid white;box-shadow:0 0 20px #22c55e;"></div>`,
-                iconSize: [34, 34],
-                iconAnchor: [17, 17]
-            });
-
-            marker = L.marker([lat, lng], {icon: greenIcon}).addTo(map);
         }
 
-        window.onload = () => {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                
-                const country = await getCountry(lat, lng);
-                document.getElementById('country').textContent = `• ${country}`;
-                document.getElementById('coords').textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
-                
-                initMap(lat, lng);
-            }, () => {
-                document.getElementById('country').textContent = "• Доступ запрещён";
-            }, { enableHighAccuracy: true });
-        };
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            
+            const country = await getCountry(lat, lng);
+            document.getElementById('country').textContent = `• ${country}`;
+            document.getElementById('coords').textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        }, () => {
+            document.getElementById('country').textContent = "• Местоположение";
+        });
+
+        // Запускаем счётчик
+        calculateDays();
+        // Обновляем каждые сутки (на всякий случай)
+        setInterval(calculateDays, 600000); // каждые 10 минут
     </script>
 </body>
 </html>
