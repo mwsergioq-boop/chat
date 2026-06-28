@@ -1,90 +1,144 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <title>Our Story</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-body{
-    height:100vh;
-    overflow:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
-    color:white;
-    background:#000;
+
+html,body{
+
+    width:100%;
+    height:100%;
+
 }
 
 
-/* Фото фон */
+body{
+
+    height:100dvh;
+    overflow:hidden;
+
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+
+    color:white;
+    background:#000;
+
+}
+
+
+/* ФОТО НА ВЕСЬ ЭКРАН */
+
 .background{
+
     position:fixed;
+
     inset:0;
+
     background-image:url("photo.JPG");
+
     background-size:cover;
+
     background-position:center;
+
     filter:blur(0px);
+
     transform:scale(1.1);
+
 }
 
 
 /* Затемнение */
+
 .overlay{
+
     position:fixed;
+
     inset:0;
 
     background:
-        linear-gradient(
-            to bottom,
-            rgba(0,0,0,.55),
-            rgba(0,0,0,.85)
-        );
+    linear-gradient(
+        to bottom,
+        rgba(0,0,0,.35),
+        rgba(0,0,0,.85)
+    );
+
 }
 
 
-/* Карточка местоположения - стекло */
+
+/* Карточка */
+
 .header{
+
     position:absolute;
-    top:0;
+
+    top:env(safe-area-inset-top);
+
     left:0;
+
     padding:22px;
+
     z-index:2;
+
 }
+
 
 
 .location-card{
 
+
     display:inline-flex;
+
     flex-direction:column;
+
 
     padding:14px 18px;
 
 
     background:
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,.18),
-            rgba(255,255,255,.05)
-        );
+    linear-gradient(
+        135deg,
+        rgba(255,255,255,.18),
+        rgba(255,255,255,.05)
+    );
 
 
     border:1px solid rgba(255,255,255,.22);
+
 
     border-radius:20px;
 
 
     backdrop-filter:blur(25px);
+
     -webkit-backdrop-filter:blur(25px);
 
 
     box-shadow:
-        0 10px 40px rgba(0,0,0,.35),
-        inset 0 1px 1px rgba(255,255,255,.25);
+
+    0 10px 40px rgba(0,0,0,.35),
+
+    inset 0 1px 1px rgba(255,255,255,.25);
 
 }
 
@@ -92,19 +146,24 @@ body{
 
 .status{
 
+
     display:flex;
+
     align-items:center;
 
     gap:8px;
 
+
     font-size:10px;
+
     font-weight:600;
 
     letter-spacing:.18em;
 
-    color:rgba(255,255,255,.55);
+    color:rgba(255,255,255,.6);
 
     margin-bottom:8px;
+
 
 }
 
@@ -113,14 +172,16 @@ body{
 .dot{
 
     width:8px;
+
     height:8px;
 
     border-radius:50%;
 
+
     background:#22c55e;
 
-    box-shadow:
-        0 0 12px #22c55e;
+    box-shadow:0 0 12px #22c55e;
+
 
     animation:pulse 2s infinite;
 
@@ -130,17 +191,27 @@ body{
 
 @keyframes pulse{
 
-    0%{
-        box-shadow:0 0 0 0 rgba(34,197,94,.6);
-    }
 
-    70%{
-        box-shadow:0 0 0 10px rgba(34,197,94,0);
-    }
+0%{
 
-    100%{
-        box-shadow:0 0 0 0 rgba(34,197,94,0);
-    }
+box-shadow:0 0 0 0 rgba(34,197,94,.6);
+
+}
+
+
+70%{
+
+box-shadow:0 0 0 10px rgba(34,197,94,0);
+
+}
+
+
+100%{
+
+box-shadow:0 0 0 0 rgba(34,197,94,0);
+
+}
+
 
 }
 
@@ -149,39 +220,40 @@ body{
 .city{
 
     font-size:21px;
+
     font-weight:600;
 
 }
 
 
-
 .region{
-
-    color:#bbb;
 
     font-size:14px;
 
-}
+    color:#bbb;
 
+}
 
 
 .country{
 
-    color:#888;
-
     font-size:13px;
+
+    color:#888;
 
 }
 
 
 
-/* Центр */
+/* ЦЕНТР */
 
 .main{
+
 
     position:fixed;
 
     inset:0;
+
 
     display:flex;
 
@@ -189,7 +261,14 @@ body{
 
     align-items:center;
 
+
     z-index:2;
+
+
+    padding-top:env(safe-area-inset-top);
+
+    padding-bottom:env(safe-area-inset-bottom);
+
 
 }
 
@@ -197,16 +276,19 @@ body{
 
 .days{
 
+
     font-size:8rem;
 
     font-weight:700;
+
 
     letter-spacing:-5px;
 
 
     text-shadow:
 
-        0 0 40px rgba(255,255,255,.3);
+    0 0 40px rgba(255,255,255,.35);
+
 
 }
 
@@ -214,20 +296,27 @@ body{
 
 @media(max-width:700px){
 
-    .days{
 
-        font-size:6rem;
+.days{
 
-    }
+    font-size:6rem;
 
 }
 
+
+}
+
+
+
 </style>
+
 
 </head>
 
 
+
 <body>
+
 
 
 <div class="background"></div>
@@ -237,6 +326,7 @@ body{
 
 
 <div class="header">
+
 
 <div class="location-card">
 
@@ -250,8 +340,11 @@ LIVE LOCATION
 </div>
 
 
+
 <div class="city" id="city">
+
 Определяем...
+
 </div>
 
 
@@ -263,91 +356,131 @@ LIVE LOCATION
 
 </div>
 
+
 </div>
+
 
 
 
 <div class="main">
 
+
 <div class="days" id="days">
+
 0
-</div>
 
 </div>
+
+
+</div>
+
+
 
 
 
 <script>
 
+
 function calculateDays(){
 
-    const start=new Date(2026,2,29);
 
-    const today=new Date();
+const start=new Date(2026,2,29);
 
-
-    const diff=Math.ceil(
-        (today-start)/(1000*60*60*24)
-    );
+const today=new Date();
 
 
-    document.getElementById("days").textContent=diff;
+const diff=Math.ceil(
+
+(today-start)/(1000*60*60*24)
+
+);
+
+
+document.getElementById("days").textContent=diff;
+
 
 }
+
+
 
 
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
+
 try{
 
-    const res=await fetch(
-    `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`
-    );
 
+const res=await fetch(
 
-    const data=await res.json();
+`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`
 
-    const a=data.address||{};
+);
 
 
 
-    document.getElementById("city").textContent=
-        a.city||
-        a.town||
-        a.village||
-        "Неизвестно";
+const data=await res.json();
 
 
-    document.getElementById("region").textContent=
-        a.state||"";
+const a=data.address||{};
 
 
-    document.getElementById("country").textContent=
-        a.country||"";
+
+document.getElementById("city").textContent=
+
+a.city ||
+
+a.town ||
+
+a.village ||
+
+"Неизвестно";
+
+
+
+document.getElementById("region").textContent=
+
+a.state || "";
+
+
+
+document.getElementById("country").textContent=
+
+a.country || "";
+
 
 }
 
 catch(e){
 
-    document.getElementById("city").textContent="Чехия";
+
+document.getElementById("city").textContent="Чехия";
+
 
 }
 
+
 },()=>{
 
-    document.getElementById("city").textContent="Геолокация отключена";
+
+document.getElementById("city").textContent="Геолокация отключена";
+
 
 });
 
 
 
+
+
 calculateDays();
+
 
 setInterval(calculateDays,600000);
 
 
+
 </script>
+
 
 
 </body>
