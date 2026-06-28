@@ -4,121 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дни</title>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #000;
-            color: #fff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .header {
-            background: #0a0a0a;
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #1a1a1a;
-            flex-shrink: 0;
-        }
-        
-        .dot {
-            width: 14px;
-            height: 14px;
-            background: #22c55e;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-        
-        .country {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #ddd;
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
         }
 
-        /* Только это добавлено */
-        .main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+            background:#000;
+            color:#fff;
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
         }
 
-        .days {
-            font-size: 7rem;
-            font-weight: 700;
-            line-height: 1;
-            text-align: center;
+        /* ---------- Верх ---------- */
+
+        .header{
+            padding:20px;
+            flex-shrink:0;
+        }
+
+        .location-card{
+            display:inline-block;
+            padding:16px 20px;
+            border-radius:18px;
+            background:rgba(255,255,255,.06);
+            backdrop-filter:blur(14px);
+            -webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,.08);
+        }
+
+        .status{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            color:#8e8e93;
+            font-size:.8rem;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-bottom:10px;
+        }
+
+        .dot{
+            width:12px;
+            height:12px;
+            border-radius:50%;
+            background:#22c55e;
+            box-shadow:0 0 10px #22c55e;
+            animation:pulse 2s infinite;
+        }
+
+        @keyframes pulse{
+            0%{box-shadow:0 0 0 0 rgba(34,197,94,.7);}
+            70%{box-shadow:0 0 0 12px rgba(34,197,94,0);}
+            100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}
+        }
+
+        .city{
+            font-size:1.55rem;
+            font-weight:700;
+            color:#fff;
+        }
+
+        .region{
+            margin-top:4px;
+            font-size:1rem;
+            color:#bdbdbd;
+        }
+
+        .country{
+            margin-top:2px;
+            font-size:.92rem;
+            color:#7b7b7b;
+        }
+
+        /* ---------- Центр ---------- */
+
+        .main{
+            flex:1;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .days{
+            font-size:10rem;
+            font-weight:700;
+            line-height:1;
+            text-align:center;
+            user-select:none;
         }
     </style>
 </head>
+
 <body>
+
     <div class="header">
-        <div class="dot"></div>
-        <div class="country" id="country">Определяем...</div>
+        <div class="location-card">
+
+            <div class="status">
+                <div class="dot"></div>
+                <span>Live Location</span>
+            </div>
+
+            <div class="city" id="city">Определяем...</div>
+            <div class="region" id="region"></div>
+            <div class="country" id="country"></div>
+
+        </div>
     </div>
-    
+
     <div class="main">
         <div class="days" id="days">0</div>
     </div>
 
-    <script>
-        function calculateDays() {
-            const start = new Date(2026, 2, 29);
-            const today = new Date();
-            const diff = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
-            document.getElementById('days').textContent = diff;
-        }
+<script>
+function calculateDays(){
+    const start=new Date(2026,2,29);
+    const today=new Date();
 
-        // Геолокация — показывает город, регион и страну
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
-                const data = await res.json();
-                const addr = data.address || {};
+    const diff=Math.ceil(
+        (today-start)/(1000*60*60*24)
+    );
 
-                let locationParts = [];
+    document.getElementById("days").textContent=diff;
+}
 
-                if (addr.city) locationParts.push(addr.city);
-                else if (addr.town) locationParts.push(addr.town);
-                else if (addr.village) locationParts.push(addr.village);
-                else if (addr.suburb) locationParts.push(addr.suburb);
+navigator.geolocation.getCurrentPosition(async(pos)=>{
 
-                if (addr.state) locationParts.push(addr.state);
-                else if (addr.region) locationParts.push(addr.region);
+    try{
 
-                if (addr.country) locationParts.push(addr.country);
+        const res=await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`
+        );
 
-                const locationText = locationParts.length > 0
-                    ? locationParts.join(", ")
-                    : "Чехия";
+        const data=await res.json();
+        const addr=data.address||{};
 
-                document.getElementById("country").textContent = locationText;
-            } catch (e) {
-                document.getElementById("country").textContent = "Чехия";
-            }
-        }, () => {
-            document.getElementById("country").textContent = "Чехия";
-        });
+        document.getElementById("city").textContent=
+            addr.city||
+            addr.town||
+            addr.village||
+            addr.suburb||
+            "Неизвестно";
 
-        calculateDays();
-        setInterval(calculateDays, 600000);
-    </script>
+        document.getElementById("region").textContent=
+            addr.state||
+            addr.region||
+            "";
+
+        document.getElementById("country").textContent=
+            addr.country||
+            "Чехия";
+
+    }catch(e){
+
+        document.getElementById("city").textContent="Не удалось определить";
+        document.getElementById("region").textContent="";
+        document.getElementById("country").textContent="Чехия";
+
+    }
+
+},()=>{
+
+    document.getElementById("city").textContent="Геолокация отключена";
+    document.getElementById("region").textContent="";
+    document.getElementById("country").textContent="";
+
+});
+
+calculateDays();
+setInterval(calculateDays,600000);
+</script>
+
 </body>
 </html>
