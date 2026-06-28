@@ -51,20 +51,6 @@
             font-weight: 500;
             color: #ddd;
         }
-        
-        .main {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .days {
-            font-size: 5.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            line-height: 1;
-        }
     </style>
 </head>
 <body>
@@ -85,13 +71,33 @@
             document.getElementById('days').textContent = diff;
         }
 
-        // Геолокация
+        // Геолокация — теперь показывает город, регион и страну
         navigator.geolocation.getCurrentPosition(async (pos) => {
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
                 const data = await res.json();
-                const country = data.address?.country || "Чехия";
-                document.getElementById('country').textContent = country;
+                const addr = data.address || {};
+
+                let locationParts = [];
+                
+                // Город или населённый пункт
+                if (addr.city) locationParts.push(addr.city);
+                else if (addr.town) locationParts.push(addr.town);
+                else if (addr.village) locationParts.push(addr.village);
+                else if (addr.suburb) locationParts.push(addr.suburb);
+
+                // Регион / область
+                if (addr.state) locationParts.push(addr.state);
+                else if (addr.region) locationParts.push(addr.region);
+
+                // Страна
+                if (addr.country) locationParts.push(addr.country);
+
+                const locationText = locationParts.length > 0 
+                    ? locationParts.join(', ') 
+                    : "Чехия";
+
+                document.getElementById('country').textContent = locationText;
             } catch(e) {
                 document.getElementById('country').textContent = "Чехия";
             }
