@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Дни</title>
+<title>Our Story</title>
 
 <style>
 *{
@@ -13,39 +13,54 @@
 }
 
 body{
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
-    background:#000;
-    color:#fff;
     height:100vh;
-    display:flex;
-    flex-direction:column;
     overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+    color:white;
+    background:#000;
 }
 
-/* ---------- Карточка местоположения ---------- */
+/* Фото на весь экран */
+.background{
+    position:fixed;
+    inset:0;
+    background-image:url("photo.jpg");
+    background-size:cover;
+    background-position:center;
+    filter:blur(2px);
+    transform:scale(1.05);
+}
 
+/* Затемнение */
+.overlay{
+    position:fixed;
+    inset:0;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,.65),
+            rgba(0,0,0,.85)
+        );
+}
+
+/* Верхняя карточка */
 .header{
+    position:relative;
     padding:22px;
-    flex-shrink:0;
+    z-index:2;
 }
 
 .location-card{
     display:inline-flex;
     flex-direction:column;
-    gap:2px;
 
     padding:12px 16px;
 
-    background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.07);
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
     border-radius:16px;
 
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
-
-    box-shadow:
-        inset 0 1px rgba(255,255,255,.05),
-        0 8px 30px rgba(0,0,0,.35);
+    backdrop-filter:blur(15px);
 }
 
 .status{
@@ -53,13 +68,10 @@ body{
     align-items:center;
     gap:8px;
 
-    margin-bottom:6px;
-
-    color:#8d8d93;
     font-size:11px;
-    font-weight:600;
-    letter-spacing:.16em;
-    text-transform:uppercase;
+    letter-spacing:.15em;
+    color:#aaa;
+    margin-bottom:6px;
 }
 
 .dot{
@@ -68,44 +80,33 @@ body{
     border-radius:50%;
     background:#22c55e;
     box-shadow:0 0 10px #22c55e;
-    animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-    0%{
-        box-shadow:0 0 0 0 rgba(34,197,94,.65);
-    }
-    70%{
-        box-shadow:0 0 0 10px rgba(34,197,94,0);
-    }
-    100%{
-        box-shadow:0 0 0 0 rgba(34,197,94,0);
-    }
 }
 
 .city{
     font-size:21px;
-    font-weight:650;
-    color:#fff;
-    line-height:1.15;
+    font-weight:600;
 }
 
 .region{
-    margin-top:3px;
+    color:#bbb;
     font-size:14px;
-    color:#b5b5b7;
 }
 
 .country{
+    color:#888;
     font-size:13px;
-    color:#777;
 }
 
-/* ---------- Центр ---------- */
 
+/* Центр */
 .main{
-    flex:1;
+    position:relative;
+    z-index:2;
+
+    height:calc(100vh - 120px);
+
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:center;
 }
@@ -113,122 +114,140 @@ body{
 .days{
     font-size:8rem;
     font-weight:700;
-    line-height:1;
-    letter-spacing:-4px;
-    user-select:none;
-    text-shadow:0 0 30px rgba(255,255,255,.08);
+    letter-spacing:-5px;
+    text-shadow:0 0 40px rgba(255,255,255,.25);
 }
 
-/* ---------- Адаптация ---------- */
+.text{
+    margin-top:10px;
+    font-size:18px;
+    color:#ddd;
+    letter-spacing:3px;
+    text-transform:uppercase;
+}
+
+.date{
+    margin-top:18px;
+    color:#aaa;
+    font-size:14px;
+}
+
 
 @media(max-width:700px){
 
-    .days{
-        font-size:6.3rem;
-    }
-
-    .city{
-        font-size:19px;
-    }
+.days{
+    font-size:6rem;
+}
 
 }
 </style>
 </head>
 
+
 <body>
+
+
+<div class="background"></div>
+<div class="overlay"></div>
+
 
 <div class="header">
 
-    <div class="location-card">
+<div class="location-card">
 
-        <div class="status">
-            <div class="dot"></div>
-            <span>LIVE</span>
-        </div>
+<div class="status">
+<div class="dot"></div>
+LIVE LOCATION
+</div>
 
-        <div class="city" id="city">Определяем...</div>
-        <div class="region" id="region"></div>
-        <div class="country" id="country"></div>
+<div class="city" id="city">
+Определяем...
+</div>
 
-    </div>
+<div class="region" id="region"></div>
+
+<div class="country" id="country"></div>
 
 </div>
+
+</div>
+
+
 
 <div class="main">
-    <div class="days" id="days">0</div>
+
+<div class="days" id="days">
+0
 </div>
+
+<div class="text">
+days together
+</div>
+
+<div class="date">
+since 29.03.2026 ❤️
+</div>
+
+</div>
+
+
 
 <script>
 
 function calculateDays(){
 
-    const start=new Date(2026,2,29);
-    const today=new Date();
+const start=new Date(2026,2,29);
+const today=new Date();
 
-    const diff=Math.ceil(
-        (today-start)/(1000*60*60*24)
-    );
+const diff=Math.ceil(
+(today-start)/(1000*60*60*24)
+);
 
-    document.getElementById("days").textContent=diff;
+document.getElementById("days").textContent=diff;
 
 }
 
+
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
-    try{
+try{
 
-        const res=await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`
-        );
+const res=await fetch(
+`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`
+);
 
-        const data=await res.json();
-        const addr=data.address||{};
+const data=await res.json();
+const a=data.address||{};
 
-        const city=
-            addr.city||
-            addr.town||
-            addr.village||
-            addr.hamlet||
-            addr.suburb||
-            "Неизвестно";
 
-        const region=
-            addr.state||
-            addr.region||
-            addr.county||
-            "";
+document.getElementById("city").textContent=
+a.city||
+a.town||
+a.village||
+"Неизвестно";
 
-        const country=
-            addr.country||
-            "";
 
-        document.getElementById("city").textContent=city;
-        document.getElementById("region").textContent=region;
-        document.getElementById("country").textContent=country;
+document.getElementById("region").textContent=
+a.state||"";
 
-    }
 
-    catch(e){
+document.getElementById("country").textContent=
+a.country||"";
 
-        document.getElementById("city").textContent="Не удалось определить";
-        document.getElementById("region").textContent="";
-        document.getElementById("country").textContent="";
 
-    }
+}catch(e){
 
-},
+document.getElementById("city").textContent="Чехия";
 
-()=>{
-
-    document.getElementById("city").textContent="Геолокация отключена";
-    document.getElementById("region").textContent="";
-    document.getElementById("country").textContent="";
+}
 
 });
+
 
 calculateDays();
 
 setInterval(calculateDays,600000);
+
 
 </script>
 
