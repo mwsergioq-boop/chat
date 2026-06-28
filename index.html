@@ -20,10 +20,8 @@
 
 
 html,body{
-
     width:100%;
     height:100%;
-
 }
 
 
@@ -46,12 +44,12 @@ body{
 }
 
 
-/* ФОТО НА ВЕСЬ ЭКРАН */
+
+/* Фото */
 
 .background{
 
     position:fixed;
-
     inset:0;
 
     background-image:url("photo.JPG");
@@ -67,12 +65,12 @@ body{
 }
 
 
+
 /* Затемнение */
 
 .overlay{
 
     position:fixed;
-
     inset:0;
 
     background:
@@ -86,7 +84,7 @@ body{
 
 
 
-/* Карточка */
+/* Верхняя карточка */
 
 .header{
 
@@ -103,6 +101,8 @@ body{
 }
 
 
+
+/* Стеклянная карточка */
 
 .location-card{
 
@@ -129,9 +129,11 @@ body{
     border-radius:20px;
 
 
-    backdrop-filter:blur(25px);
 
-    -webkit-backdrop-filter:blur(25px);
+    backdrop-filter:blur(2px);
+
+    -webkit-backdrop-filter:blur(2px);
+
 
 
     box-shadow:
@@ -139,6 +141,7 @@ body{
     0 10px 40px rgba(0,0,0,.35),
 
     inset 0 1px 1px rgba(255,255,255,.25);
+
 
 }
 
@@ -158,9 +161,12 @@ body{
 
     font-weight:600;
 
+
     letter-spacing:.18em;
 
+
     color:rgba(255,255,255,.6);
+
 
     margin-bottom:8px;
 
@@ -171,19 +177,25 @@ body{
 
 .dot{
 
+
     width:8px;
 
     height:8px;
+
 
     border-radius:50%;
 
 
     background:#22c55e;
 
-    box-shadow:0 0 12px #22c55e;
+
+    box-shadow:
+
+    0 0 12px #22c55e;
 
 
     animation:pulse 2s infinite;
+
 
 }
 
@@ -217,6 +229,7 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 
 
+
 .city{
 
     font-size:21px;
@@ -226,6 +239,7 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 }
 
 
+
 .region{
 
     font-size:14px;
@@ -233,6 +247,7 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
     color:#bbb;
 
 }
+
 
 
 .country{
@@ -245,7 +260,9 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 
 
-/* ЦЕНТР */
+
+
+/* Центр экрана */
 
 .main{
 
@@ -274,6 +291,7 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 
 
+
 .days{
 
 
@@ -283,6 +301,7 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 
     letter-spacing:-5px;
+
 
 
     text-shadow:
@@ -309,7 +328,6 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 
 </style>
-
 
 </head>
 
@@ -384,19 +402,19 @@ LIVE LOCATION
 function calculateDays(){
 
 
-const start=new Date(2026,2,29);
+    const start=new Date(2026,2,29);
 
-const today=new Date();
-
-
-const diff=Math.ceil(
-
-(today-start)/(1000*60*60*24)
-
-);
+    const today=new Date();
 
 
-document.getElementById("days").textContent=diff;
+    const diff=Math.ceil(
+
+    (today-start)/(1000*60*60*24)
+
+    );
+
+
+    document.getElementById("days").textContent=diff;
 
 
 }
@@ -447,6 +465,7 @@ a.state || "";
 document.getElementById("country").textContent=
 
 a.country || "";
+
 
 
 }
