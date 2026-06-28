@@ -26,7 +26,6 @@ html,body{
 
 
 body{
-
     height:100dvh;
     overflow:hidden;
 
@@ -40,12 +39,11 @@ body{
 
     color:white;
     background:#000;
-
 }
 
 
 
-/* Фото */
+/* ФОН */
 
 .background{
 
@@ -84,7 +82,7 @@ body{
 
 
 
-/* Верхняя карточка */
+/* КАРТОЧКА */
 
 .header{
 
@@ -102,10 +100,7 @@ body{
 
 
 
-/* Стеклянная карточка */
-
 .location-card{
-
 
     display:inline-flex;
 
@@ -129,11 +124,9 @@ body{
     border-radius:20px;
 
 
-
     backdrop-filter:blur(2px);
 
     -webkit-backdrop-filter:blur(2px);
-
 
 
     box-shadow:
@@ -142,13 +135,13 @@ body{
 
     inset 0 1px 1px rgba(255,255,255,.25);
 
-
 }
 
 
 
-.status{
+/* LIVE */
 
+.status{
 
     display:flex;
 
@@ -170,13 +163,11 @@ body{
 
     margin-bottom:8px;
 
-
 }
 
 
 
 .dot{
-
 
     width:8px;
 
@@ -196,13 +187,11 @@ body{
 
     animation:pulse 2s infinite;
 
-
 }
 
 
 
 @keyframes pulse{
-
 
 0%{
 
@@ -210,13 +199,11 @@ box-shadow:0 0 0 0 rgba(34,197,94,.6);
 
 }
 
-
 70%{
 
 box-shadow:0 0 0 10px rgba(34,197,94,0);
 
 }
-
 
 100%{
 
@@ -224,13 +211,20 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 }
 
-
 }
 
 
 
+/* ГОРОД */
 
-.city{
+.place{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
 
     font-size:21px;
 
@@ -239,12 +233,9 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 }
 
 
+.pin{
 
-.region{
-
-    font-size:14px;
-
-    color:#bbb;
+    font-size:18px;
 
 }
 
@@ -252,20 +243,20 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 .country{
 
+    margin-top:3px;
+
     font-size:13px;
 
-    color:#888;
+    color:rgba(255,255,255,.55);
 
 }
 
 
 
 
-
-/* Центр экрана */
+/* ЦЕНТР */
 
 .main{
-
 
     position:fixed;
 
@@ -286,14 +277,11 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
     padding-bottom:env(safe-area-inset-bottom);
 
-
 }
 
 
 
-
 .days{
-
 
     font-size:8rem;
 
@@ -303,11 +291,9 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
     letter-spacing:-5px;
 
 
-
     text-shadow:
 
     0 0 40px rgba(255,255,255,.35);
-
 
 }
 
@@ -315,17 +301,13 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 @media(max-width:700px){
 
-
 .days{
 
     font-size:6rem;
 
 }
 
-
 }
-
-
 
 </style>
 
@@ -336,10 +318,10 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 <body>
 
 
-
 <div class="background"></div>
 
 <div class="overlay"></div>
+
 
 
 
@@ -353,42 +335,44 @@ box-shadow:0 0 0 0 rgba(34,197,94,0);
 
 <div class="dot"></div>
 
-LIVE LOCATION
+LIVE
 
 </div>
 
 
 
-<div class="city" id="city">
+<div class="place">
 
+<span class="pin">📍</span>
+
+<span id="city">
 Определяем...
+</span>
 
 </div>
 
-
-<div class="region" id="region"></div>
 
 
 <div class="country" id="country"></div>
 
 
+
 </div>
 
 
 </div>
+
 
 
 
 
 <div class="main">
 
-
 <div class="days" id="days">
 
 0
 
 </div>
-
 
 </div>
 
@@ -402,19 +386,19 @@ LIVE LOCATION
 function calculateDays(){
 
 
-    const start=new Date(2026,2,29);
+const start=new Date(2026,2,29);
 
-    const today=new Date();
-
-
-    const diff=Math.ceil(
-
-    (today-start)/(1000*60*60*24)
-
-    );
+const today=new Date();
 
 
-    document.getElementById("days").textContent=diff;
+const diff=Math.ceil(
+
+(today-start)/(1000*60*60*24)
+
+);
+
+
+document.getElementById("days").textContent=diff;
 
 
 }
@@ -452,13 +436,9 @@ a.town ||
 
 a.village ||
 
+a.suburb ||
+
 "Неизвестно";
-
-
-
-document.getElementById("region").textContent=
-
-a.state || "";
 
 
 
@@ -499,7 +479,6 @@ setInterval(calculateDays,600000);
 
 
 </script>
-
 
 
 </body>
