@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Story</title>
+<title>Our</title>
 
 <style>
 *{
@@ -20,16 +20,18 @@ body{
     background:#000;
 }
 
-/* Фото на весь экран */
+
+/* Фото фон */
 .background{
     position:fixed;
     inset:0;
     background-image:url("photo.JPG");
     background-size:cover;
     background-position:center;
-    filter:blur(2px);
-    transform:scale(1.05);
+    filter:blur(18px);
+    transform:scale(1.15);
 }
+
 
 /* Затемнение */
 .overlay{
@@ -38,19 +40,24 @@ body{
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,.65),
+            rgba(0,0,0,.55),
             rgba(0,0,0,.85)
         );
 }
 
-/* Верхняя карточка */
+
+/* Местоположение */
 .header{
-    position:relative;
+    position:absolute;
+    top:0;
+    left:0;
     padding:22px;
     z-index:2;
 }
 
+
 .location-card{
+
     display:inline-flex;
     flex-direction:column;
 
@@ -61,9 +68,12 @@ body{
     border-radius:16px;
 
     backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
 }
 
+
 .status{
+
     display:flex;
     align-items:center;
     gap:8px;
@@ -72,25 +82,33 @@ body{
     letter-spacing:.15em;
     color:#aaa;
     margin-bottom:6px;
+
 }
 
+
 .dot{
+
     width:8px;
     height:8px;
     border-radius:50%;
+
     background:#22c55e;
     box-shadow:0 0 10px #22c55e;
+
 }
+
 
 .city{
     font-size:21px;
     font-weight:600;
 }
 
+
 .region{
     color:#bbb;
     font-size:14px;
 }
+
 
 .country{
     color:#888;
@@ -98,38 +116,33 @@ body{
 }
 
 
-/* Центр */
-.main{
-    position:relative;
-    z-index:2;
 
-    height:calc(100vh - 120px);
+/* Центр экрана */
+
+.main{
+
+    position:fixed;
+    inset:0;
 
     display:flex;
-    flex-direction:column;
     justify-content:center;
     align-items:center;
+
+    z-index:2;
+
 }
+
 
 .days{
+
     font-size:8rem;
     font-weight:700;
+
     letter-spacing:-5px;
-    text-shadow:0 0 40px rgba(255,255,255,.25);
-}
 
-.text{
-    margin-top:10px;
-    font-size:18px;
-    color:#ddd;
-    letter-spacing:3px;
-    text-transform:uppercase;
-}
+    text-shadow:
+        0 0 40px rgba(255,255,255,.3);
 
-.date{
-    margin-top:18px;
-    color:#aaa;
-    font-size:14px;
 }
 
 
@@ -140,7 +153,9 @@ body{
 }
 
 }
+
 </style>
+
 </head>
 
 
@@ -148,25 +163,35 @@ body{
 
 
 <div class="background"></div>
+
 <div class="overlay"></div>
+
 
 
 <div class="header">
 
 <div class="location-card">
 
+
 <div class="status">
+
 <div class="dot"></div>
+
 LIVE LOCATION
+
 </div>
+
 
 <div class="city" id="city">
 Определяем...
 </div>
 
+
 <div class="region" id="region"></div>
 
+
 <div class="country" id="country"></div>
+
 
 </div>
 
@@ -180,32 +205,46 @@ LIVE LOCATION
 0
 </div>
 
+</div>
+
+
+
 <script>
+
 
 function calculateDays(){
 
 const start=new Date(2026,2,29);
+
 const today=new Date();
+
 
 const diff=Math.ceil(
 (today-start)/(1000*60*60*24)
 );
+
 
 document.getElementById("days").textContent=diff;
 
 }
 
 
+
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
+
 try{
+
 
 const res=await fetch(
 `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`
 );
 
+
 const data=await res.json();
+
 const a=data.address||{};
+
 
 
 document.getElementById("city").textContent=
@@ -215,21 +254,35 @@ a.village||
 "Неизвестно";
 
 
+
 document.getElementById("region").textContent=
-a.state||"";
+a.state||
+"";
+
 
 
 document.getElementById("country").textContent=
-a.country||"";
+a.country||
+"";
 
 
-}catch(e){
+}
+
+catch(e){
 
 document.getElementById("city").textContent="Чехия";
 
 }
 
+
+},
+
+()=>{
+
+document.getElementById("city").textContent="Геолокация отключена";
+
 });
+
 
 
 calculateDays();
@@ -238,6 +291,7 @@ setInterval(calculateDays,600000);
 
 
 </script>
+
 
 </body>
 </html>
