@@ -35,36 +35,40 @@
         }
         .location-card {
             display: flex; flex-direction: column;
-            padding: 20px 24px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 26px;
-            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-            box-shadow: 0 12px 35px rgba(0,0,0,.25), inset 0 1px 2px rgba(255,255,255,.15);
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 22px;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0,0,0,.2), inset 0 1px 1px rgba(255,255,255,.1);
             pointer-events: auto;
-            min-width: 230px;
-            max-width: 320px;
+            min-width: 190px;
+            max-width: 280px;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+        }
+        .location-card:active {
+            transform: scale(0.96);
         }
         .status {
-            display: flex; align-items: center; gap: 11px;
-            font-size: 12px; font-weight: 500; letter-spacing: .13em;
-            color: rgba(255,255,255,.8); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 9px;
+            font-size: 10px; font-weight: 500; letter-spacing: .11em;
+            color: rgba(255,255,255,.7); margin-bottom: 10px;
         }
         .dot {
-            width: 11px; height: 11px; border-radius: 50%;
-            background: #22c55e; box-shadow: 0 0 18px #22c55e;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #22c55e; box-shadow: 0 0 14px #22c55e;
             animation: pulse 1.8s infinite cubic-bezier(0.4, 0, 0.6, 1);
         }
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.5); }
-            50% { box-shadow: 0 0 0 9px rgba(34,197,94,0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.4); }
+            50% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
         }
         .location-info {
             display: flex; flex-direction: column;
         }
-        .place { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 600; line-height: 1.1; }
-        .pin { font-size: 20px; opacity: 0.95; }
-        .country { margin-top: 6px; font-size: 15px; color: rgba(255,255,255,.7); opacity: 0.9; }
+        .place { display: flex; align-items: center; gap: 8px; font-size: 21px; font-weight: 600; line-height: 1.1; }
+        .pin { font-size: 18px; opacity: 0.95; }
+        .country { margin-top: 4px; font-size: 13.5px; color: rgba(255,255,255,.6); opacity: 0.9; }
         .main {
             position: fixed; inset: 0;
             display: flex; justify-content: center; align-items: center;
@@ -78,22 +82,22 @@
         }
         @media(max-width:700px) { .days { font-size: 6rem; } }
         .help-btn {
-            width: 48px; height: 48px; border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.22);
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            color: white; font-size: 22px; font-weight: 600;
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            color: white; font-size: 20px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 1px 1px rgba(255,255,255,.15);
-            transition: transform .2s ease; flex-shrink: 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,.2), inset 0 1px 1px rgba(255,255,255,.1);
+            transition: transform .2s cubic-bezier(0.2, 0, 0, 1); flex-shrink: 0;
             pointer-events: auto; -webkit-tap-highlight-color: transparent;
         }
         .help-btn:active { transform: scale(.92); }
         .modal-overlay {
             position: fixed; inset: 0; z-index: 1000;
             display: flex; justify-content: center; align-items: center;
-            background: rgba(0,0,0,.65);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            background: rgba(0,0,0,.6);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             opacity: 0; visibility: hidden;
             transition: opacity .25s ease, visibility .25s;
         }
@@ -102,11 +106,11 @@
         }
         .modal-content {
             max-width: 340px; width: calc(100% - 40px);
-            padding: 26px; border-radius: 22px;
-            background: rgba(30,30,35,.92);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,.18);
-            box-shadow: 0 20px 60px rgba(0,0,0,.4);
+            padding: 24px; border-radius: 20px;
+            background: rgba(30,30,35,.88);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,.15);
+            box-shadow: 0 15px 50px rgba(0,0,0,.3);
             transform: translateY(10px) scale(.96);
             transition: transform .25s ease-out;
         }
@@ -114,13 +118,13 @@
             transform: translateY(0) scale(1);
         }
         .dialog-title {
-            font-size: 19px; font-weight: 600; margin-bottom: 16px;
+            font-size: 18px; font-weight: 600; margin-bottom: 14px;
             display: flex; align-items: center; justify-content: space-between;
         }
         .dialog-close {
-            background: rgba(255,255,255,.12); border: none; color: white;
-            width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
-            font-size: 17px; display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,.1); border: none; color: white;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+            font-size: 16px; display: flex; align-items: center; justify-content: center;
             -webkit-tap-highlight-color: transparent;
         }
         .version-tag {
@@ -130,8 +134,8 @@
         }
         .changelog { list-style: none; padding: 0; margin: 0; }
         .changelog li {
-            padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.08);
-            font-size: 14.5px; line-height: 1.5; color: rgba(255,255,255,.85);
+            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.08);
+            font-size: 14px; line-height: 1.5; color: rgba(255,255,255,.85);
             display: flex; gap: 10px;
         }
         .changelog li:last-child { border-bottom: none; }
@@ -145,7 +149,7 @@
     <div class="overlay"></div>
     <div class="header">
         <div class="location-card">
-            <div class="status"><div class="dot"></div>CURRENT LOCATION</div>
+            <div class="status"><div class="dot"></div>LIVE</div>
             <div class="location-info">
                 <div class="place"><span class="pin">•</span><span id="city">Определяем...</span></div>
                 <div class="country" id="country"></div>
