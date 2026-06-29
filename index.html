@@ -35,33 +35,37 @@
             width: 100%; pointer-events: none;
         }
         .location-card {
-            display: inline-flex; flex-direction: column;
-            padding: 16px 20px;
-            background: linear-gradient(145deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
-            border: 1px solid rgba(255,255,255,.2);
-            border-radius: 22px;
-            backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
+            display: flex; flex-direction: column;
+            padding: 18px 22px;
+            background: linear-gradient(150deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 24px;
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 14px 40px rgba(0,0,0,.35), inset 0 1px 2px rgba(255,255,255,.2);
             pointer-events: auto;
-            min-width: 200px;
+            min-width: 220px;
+            max-width: 300px;
         }
         .status {
-            display: flex; align-items: center; gap: 9px;
-            font-size: 11px; font-weight: 500; letter-spacing: .1em;
-            color: rgba(255,255,255,.7); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 11px; font-weight: 500; letter-spacing: .12em;
+            color: rgba(255,255,255,.75); margin-bottom: 12px;
         }
         .dot {
-            width: 9px; height: 9px; border-radius: 50%;
-            background: #22c55e; box-shadow: 0 0 14px #22c55e;
-            animation: pulse 2s infinite;
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #22c55e; box-shadow: 0 0 16px #22c55e;
+            animation: pulse 1.8s infinite cubic-bezier(0.4, 0, 0.6, 1);
         }
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
-            70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
+            50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
         }
-        .place { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 600; }
-        .pin { font-size: 19px; opacity: 0.9; }
-        .country { margin-top: 4px; font-size: 14px; color: rgba(255,255,255,.6); }
+        .location-info {
+            display: flex; flex-direction: column;
+        }
+        .place { display: flex; align-items: center; gap: 9px; font-size: 23px; font-weight: 600; line-height: 1.1; }
+        .pin { font-size: 18px; opacity: 0.95; }
+        .country { margin-top: 5px; font-size: 14.5px; color: rgba(255,255,255,.65); opacity: 0.9; }
         .main {
             position: fixed; inset: 0;
             display: flex; justify-content: center; align-items: center;
@@ -75,11 +79,11 @@
         }
         @media(max-width:700px) { .days { font-size: 6rem; } }
         .help-btn {
-            width: 44px; height: 44px; border-radius: 50%;
+            width: 46px; height: 46px; border-radius: 50%;
             border: 1px solid rgba(255,255,255,.22);
             background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.05));
             backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-            color: white; font-size: 20px; font-weight: 600;
+            color: white; font-size: 21px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.25);
             transition: transform .2s ease; flex-shrink: 0;
@@ -142,9 +146,11 @@
     <div class="overlay"></div>
     <div class="header">
         <div class="location-card">
-            <div class="status"><div class="dot"></div>LIVE</div>
-            <div class="place"><span class="pin">📍</span><span id="city">Определяем...</span></div>
-            <div class="country" id="country"></div>
+            <div class="status"><div class="dot"></div>CURRENT LOCATION</div>
+            <div class="location-info">
+                <div class="place"><span class="pin">•</span><span id="city">Определяем...</span></div>
+                <div class="country" id="country"></div>
+            </div>
         </div>
         <button class="help-btn" id="helpBtn" aria-label="Что нового">?</button>
     </div>
