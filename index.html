@@ -8,9 +8,7 @@
     <title>Our</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         html, body { width: 100%; height: 100%; }
-        
         body {
             height: 100dvh;
             overflow: hidden;
@@ -18,66 +16,52 @@
             color: white;
             background: #000;
         }
-
-        /* ФОН */
         .background {
             position: fixed; inset: 0;
             background-image: url("photo.JPG");
             background-size: cover; background-position: center;
-            filter: blur(20px); transform: scale(1.1);
+            filter: blur(20px) brightness(0.9); transform: scale(1.1);
             z-index: 0;
         }
-
         .overlay {
             position: fixed; inset: 0;
             background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.85));
             z-index: 1;
         }
-
-        /* КАРТОЧКА */
         .header {
             position: absolute; top: env(safe-area-inset-top); left: 0;
-            padding: 22px; z-index: 10; /* Повысил z-index */
+            padding: 22px; z-index: 10;
             display: flex; gap: 12px; align-items: flex-start;
-            width: 100%; pointer-events: none; /* Чтобы клики проходили сквозь пустые места */
+            width: 100%; pointer-events: none;
         }
-
         .location-card {
             display: inline-flex; flex-direction: column;
-            padding: 14px 18px;
-            background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.05));
-            border: 1px solid rgba(255,255,255,.22);
-            border-radius: 20px;
-            backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-            box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.25);
-            pointer-events: auto; /* Возвращаем клики карточке */
+            padding: 16px 20px;
+            background: linear-gradient(145deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 22px;
+            backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
+            pointer-events: auto;
+            min-width: 200px;
         }
-
-        /* LIVE */
         .status {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 10px; font-weight: 600; letter-spacing: .18em;
-            color: rgba(255,255,255,.6); margin-bottom: 8px;
+            display: flex; align-items: center; gap: 9px;
+            font-size: 11px; font-weight: 500; letter-spacing: .1em;
+            color: rgba(255,255,255,.7); margin-bottom: 10px;
         }
-
         .dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: #22c55e; box-shadow: 0 0 12px #22c55e;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #22c55e; box-shadow: 0 0 14px #22c55e;
             animation: pulse 2s infinite;
         }
-
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
             70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
-            100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
         }
-
-        /* ГОРОД */
-        .place { display: flex; align-items: center; gap: 7px; font-size: 21px; font-weight: 600; }
-        .pin { font-size: 18px; }
-        .country { margin-top: 3px; font-size: 13px; color: rgba(255,255,255,.55); }
-
-        /* ЦЕНТР */
+        .place { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 600; }
+        .pin { font-size: 19px; opacity: 0.9; }
+        .country { margin-top: 4px; font-size: 14px; color: rgba(255,255,255,.6); }
         .main {
             position: fixed; inset: 0;
             display: flex; justify-content: center; align-items: center;
@@ -85,15 +69,11 @@
             padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);
             pointer-events: none;
         }
-
         .days {
             font-size: 8rem; font-weight: 700; letter-spacing: -5px;
             text-shadow: 0 0 40px rgba(255,255,255,.35);
         }
-
         @media(max-width:700px) { .days { font-size: 6rem; } }
-
-        /* КНОПКА ? */
         .help-btn {
             width: 44px; height: 44px; border-radius: 50%;
             border: 1px solid rgba(255,255,255,.22);
@@ -102,29 +82,21 @@
             color: white; font-size: 20px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.25);
-            transition: transform .2s ease, background .2s ease; 
-            flex-shrink: 0;
-            pointer-events: auto; /* Обязательно возвращаем клики кнопке */
-            -webkit-tap-highlight-color: transparent;
+            transition: transform .2s ease; flex-shrink: 0;
+            pointer-events: auto; -webkit-tap-highlight-color: transparent;
         }
         .help-btn:active { transform: scale(.92); }
-
-        /* МОДАЛЬНОЕ ОКНО (Замена dialog) */
         .modal-overlay {
-            position: fixed; inset: 0;
-            z-index: 1000; /* Максимальный приоритет */
+            position: fixed; inset: 0; z-index: 1000;
             display: flex; justify-content: center; align-items: center;
             background: rgba(0,0,0,.6);
             backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            
             opacity: 0; visibility: hidden;
             transition: opacity .25s ease, visibility .25s;
         }
-
         .modal-overlay.active {
             opacity: 1; visibility: visible;
         }
-
         .modal-content {
             max-width: 340px; width: calc(100% - 40px);
             padding: 24px; border-radius: 20px;
@@ -132,33 +104,27 @@
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,.15);
             box-shadow: 0 20px 60px rgba(0,0,0,.6);
-            
             transform: translateY(10px) scale(.96);
             transition: transform .25s ease-out;
         }
-
         .modal-overlay.active .modal-content {
             transform: translateY(0) scale(1);
         }
-
         .dialog-title {
             font-size: 18px; font-weight: 600; margin-bottom: 14px;
             display: flex; align-items: center; justify-content: space-between;
         }
-
         .dialog-close {
             background: rgba(255,255,255,.1); border: none; color: white;
             width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
             font-size: 16px; display: flex; align-items: center; justify-content: center;
             -webkit-tap-highlight-color: transparent;
         }
-
         .version-tag {
             display: inline-block; padding: 3px 8px; border-radius: 8px;
             background: rgba(34,197,94,.2); color: #22c55e;
             font-size: 11px; font-weight: 600; margin-left: 8px; letter-spacing: .05em;
         }
-
         .changelog { list-style: none; padding: 0; margin: 0; }
         .changelog li {
             padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.08);
@@ -172,28 +138,17 @@
     </style>
 </head>
 <body>
-
     <div class="background"></div>
     <div class="overlay"></div>
-
     <div class="header">
         <div class="location-card">
             <div class="status"><div class="dot"></div>LIVE</div>
-            <div class="place">
-                <span class="pin">•</span>
-                <span id="city">Определяем...</span>
-            </div>
+            <div class="place"><span class="pin">📍</span><span id="city">Определяем...</span></div>
             <div class="country" id="country"></div>
         </div>
-        <!-- Кнопка теперь гарантированно кликабельна благодаря pointer-events -->
         <button class="help-btn" id="helpBtn" aria-label="Что нового">?</button>
     </div>
-
-    <div class="main">
-        <div class="days" id="days">0</div>
-    </div>
-
-    <!-- Замена <dialog> на div с классом modal-overlay -->
+    <div class="main"><div class="days" id="days">0</div></div>
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
             <div class="dialog-title">
@@ -208,74 +163,34 @@
             </ul>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById("modalOverlay");
-            const helpBtn = document.getElementById("helpBtn");
-            const closeBtn = document.getElementById("dialogClose");
+            const modal = document.getElementById("modalOverlay"), helpBtn = document.getElementById("helpBtn"), closeBtn = document.getElementById("dialogClose");
+            const toggleModal = (show) => modal.classList.toggle("active", show);
+            if (helpBtn) helpBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); toggleModal(true); });
+            if (closeBtn) closeBtn.addEventListener("click", () => toggleModal(false));
+            if (modal) modal.addEventListener("click", (e) => e.target === modal && toggleModal(false));
+            document.addEventListener("keydown", (e) => e.key === "Escape" && modal.classList.contains("active") && toggleModal(false));
 
-            // Открытие
-            if (helpBtn && modal) {
-                helpBtn.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    modal.classList.add("active");
-                });
-            }
-
-            // Закрытие по крестику
-            if (closeBtn && modal) {
-                closeBtn.addEventListener("click", () => {
-                    modal.classList.remove("active");
-                });
-            }
-
-            // Закрытие по клику вне контента (по затемнению)
-            if (modal) {
-                modal.addEventListener("click", (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove("active");
-                    }
-                });
-            }
-
-            // Закрытие по Escape
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape" && modal.classList.contains("active")) {
-                    modal.classList.remove("active");
-                }
-            });
-
-            // --- Остальная логика без изменений ---
-            function calculateDays() {
-                const start = new Date(2026, 2, 29);
-                const today = new Date();
-                const diff = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
-                const daysEl = document.getElementById("days");
-                if(daysEl) daysEl.textContent = diff;
-            }
-            calculateDays();
-            setInterval(calculateDays, 600000);
+            const updateDays = () => {
+                const start = new Date(2026, 2, 29), today = new Date();
+                document.getElementById("days").textContent = Math.ceil((today - start) / 8.64e7);
+            };
+            updateDays(); setInterval(updateDays, 6e5);
 
             if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
-                        const data = await res.json();
-                        const a = data.address || {};
-                        const cityEl = document.getElementById("city");
-                        const countryEl = document.getElementById("country");
-                        if(cityEl) cityEl.textContent = a.city || a.town || a.village || a.suburb || "Неизвестно";
-                        if(countryEl) countryEl.textContent = a.country || "";
-                    } catch (e) {
-                        const cityEl = document.getElementById("city");
-                        if(cityEl) cityEl.textContent = "Чехия";
-                    }
-                }, () => {
-                    const cityEl = document.getElementById("city");
-                    if(cityEl) cityEl.textContent = "Геолокация отключена";
-                });
+                navigator.geolocation.getCurrentPosition(
+                    async (pos) => {
+                        try {
+                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
+                            const {address={}} = await res.json();
+                            const cityEl = document.getElementById("city"), countryEl = document.getElementById("country");
+                            if (cityEl) cityEl.textContent = address.city || address.town || address.village || address.suburb || "Неизвестно";
+                            if (countryEl) countryEl.textContent = address.country || "";
+                        } catch { document.getElementById("city").textContent = "Чехия"; }
+                    },
+                    () => { document.getElementById("city").textContent = "Геолокация откл."; }
+                );
             }
         });
     </script>
