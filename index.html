@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Our</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,251 +11,114 @@
         body {
             height: 100dvh;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             color: white;
             background: #000;
+            -webkit-font-smoothing: antialiased;
         }
         .background {
             position: fixed; inset: 0;
             background-image: url("photo.JPG");
             background-size: cover; background-position: center;
-            filter: brightness(0.45) contrast(1.1) saturate(1.2);
+            filter: brightness(0.4) saturate(1.1);
             z-index: 0;
         }
-        .overlay {
-            position: fixed; inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,.3), rgba(0,0,0,.7));
-            z-index: 1;
-        }
-        .grid-container {
+        .container {
             position: relative;
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-columns: [start] 16px [content-start] 1fr [content-end] 16px [end];
-            grid-template-rows: [top] auto [middle] 1fr [bottom] auto;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: calc(16px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
             max-width: 500px;
             margin: 0 auto;
+            z-index: 1;
         }
-        .header {
-            grid-column: content-start / content-end;
-            grid-row: top;
-            padding-top: calc(12px + env(safe-area-inset-top));
-            padding-left: 0;
-            padding-right: 0;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            width: 100%;
-            pointer-events: none;
-        }
-        .location-card {
-            display: flex;
-            flex-direction: column;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 22px;
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            pointer-events: auto;
-            min-width: 190px;
-            max-width: 280px;
-            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
-        }
-        .location-card:active {
-            transform: scale(0.96);
-        }
-        .location-card.pulse-grow {
-            animation: pulseGrow 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes pulseGrow {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.06); }
-            60% { transform: scale(0.98); }
-            100% { transform: scale(1); }
-        }
-        .status {
+        .location {
             display: flex;
             align-items: center;
-            gap: 9px;
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: .11em;
-            color: rgba(255,255,255,.7);
-            margin-bottom: 10px;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            align-self: flex-start;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
+        .location:active { transform: scale(0.94); }
         .dot {
-            width: 9px; height: 9px; border-radius: 50%;
-            background: #22c55e; box-shadow: 0 0 14px #22c55e;
-            animation: pulse 1.8s infinite cubic-bezier(0.4, 0, 0.6, 1);
+            width: 6px; height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #22c55e;
         }
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.4); }
-            50% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+        .location-text {
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0.9;
         }
-        .location-info {
+        .center {
+            flex: 1;
             display: flex;
-            flex-direction: column;
-        }
-        .place { display: flex; align-items: center; gap: 8px; font-size: 21px; font-weight: 600; line-height: 1.1; }
-        .pin { font-size: 18px; opacity: 0.95; }
-        .country { margin-top: 4px; font-size: 13.5px; color: rgba(255,255,255,.6); opacity: 0.9; }
-        .main {
-            grid-column: content-start / content-end;
-            grid-row: middle;
-            display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 5;
-            pointer-events: none;
+            justify-content: center;
         }
         .days {
-            font-size: 8rem;
+            font-size: clamp(80px, 20vw, 140px);
             font-weight: 700;
-            letter-spacing: -5px;
-            text-shadow: 0 0 40px rgba(255,255,255,.35);
+            letter-spacing: -4px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
         }
-        @media(max-width:700px) { .days { font-size: 6rem; } }
-        .help-btn {
-            width: 44px; height: 44px; border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.15);
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(14px) saturate(180%);
-            -webkit-backdrop-filter: blur(14px) saturate(180%);
-            color: white; font-size: 20px; font-weight: 600;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: transform .2s cubic-bezier(0.2, 0, 0, 1); flex-shrink: 0;
-            pointer-events: auto; -webkit-tap-highlight-color: transparent;
-        }
-        .help-btn:active { transform: scale(.92); }
-        .modal-overlay {
-            position: fixed; inset: 0; z-index: 1000;
-            display: flex; justify-content: center; align-items: center;
-            background: rgba(0,0,0,.6);
-            backdrop-filter: blur(12px) saturate(160%);
-            -webkit-backdrop-filter: blur(12px) saturate(160%);
-            opacity: 0; visibility: hidden;
-            transition: opacity .25s ease, visibility .25s;
-        }
-        .modal-overlay.active {
-            opacity: 1; visibility: visible;
-        }
-        .modal-content {
-            max-width: 340px; width: calc(100% - 40px);
-            padding: 24px; border-radius: 20px;
-            background: rgba(100, 100, 110, 0.25);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 15px 50px rgba(0,0,0,.3);
-            transform: translateY(10px) scale(.96);
-            transition: transform .25s ease-out;
-        }
-        .modal-overlay.active .modal-content {
-            transform: translateY(0) scale(1);
-        }
-        .dialog-title {
-            font-size: 18px; font-weight: 600; margin-bottom: 14px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .dialog-close {
-            background: rgba(255,255,255,.1); border: none; color: white;
-            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-            font-size: 16px; display: flex; align-items: center; justify-content: center;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .version-tag {
-            display: inline-block; padding: 3px 8px; border-radius: 8px;
-            background: rgba(34,197,94,.2); color: #22c55e;
-            font-size: 11px; font-weight: 600; margin-left: 8px; letter-spacing: .05em;
-        }
-        .changelog { list-style: none; padding: 0; margin: 0; }
-        .changelog li {
-            padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.08);
-            font-size: 14px; line-height: 1.5; color: rgba(255,255,255,.85);
-            display: flex; gap: 10px;
-        }
-        .changelog li:last-child { border-bottom: none; }
-        .changelog li::before {
-            content: "•"; color: #22c55e; font-size: 18px; line-height: 1; flex-shrink: 0;
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            opacity: 0.6;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
     <div class="background"></div>
-    <div class="overlay"></div>
-    <div class="grid-container">
-        <div class="header">
-            <div class="location-card" id="locationCard">
-                <div class="status"><div class="dot"></div>LIVE</div>
-                <div class="location-info">
-                    <div class="place"><span class="pin">•</span><span id="city">Определяем...</span></div>
-                    <div class="country" id="country"></div>
-                </div>
-            </div>
-            <button class="help-btn" id="helpBtn" aria-label="Что нового">?</button>
+    <div class="container">
+        <div class="location" id="location">
+            <div class="dot"></div>
+            <div class="location-text" id="locationText">Загрузка...</div>
         </div>
-        <div class="main"><div class="days" id="days">0</div></div>
-    </div>
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content">
-            <div class="dialog-title">
-                <span>Vtest 1.1<span class="version-tag">v2.0</span></span>
-                <button class="dialog-close" id="dialogClose" aria-label="Закрыть">✕</button>
-            </div>
-            <ul class="changelog">
-                <li>test glass</li>
-                <li>geo</li>
-                <li>plint</li>
-                <li>pht</li>
-            </ul>
+        <div class="center">
+            <div class="days" id="days">0</div>
+        </div>
+        <div class="info">
+            <div>вместе</div>
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById("modalOverlay"), helpBtn = document.getElementById("helpBtn"), closeBtn = document.getElementById("dialogClose");
-            const locationCard = document.getElementById("locationCard");
-            const toggleModal = (show) => modal.classList.toggle("active", show);
-            if (helpBtn) helpBtn.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); toggleModal(true); });
-            if (closeBtn) closeBtn.addEventListener("click", () => toggleModal(false));
-            if (modal) modal.addEventListener("click", (e) => e.target === modal && toggleModal(false));
-            document.addEventListener("keydown", (e) => e.key === "Escape" && modal.classList.contains("active") && toggleModal(false));
+        const updateDays = () => {
+            const start = new Date(2026, 2, 29);
+            const today = new Date();
+            document.getElementById("days").textContent = Math.ceil((today - start) / 8.64e7);
+        };
+        updateDays();
+        setInterval(updateDays, 6e5);
 
-            if(locationCard) {
-                locationCard.addEventListener("click", () => {
-                    locationCard.classList.remove("pulse-grow");
-                    void locationCard.offsetWidth;
-                    locationCard.classList.add("pulse-grow");
-                });
-            }
-
-            const updateDays = () => {
-                const start = new Date(2026, 2, 29), today = new Date();
-                document.getElementById("days").textContent = Math.ceil((today - start) / 8.64e7);
-            };
-            updateDays(); setInterval(updateDays, 6e5);
-
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    async (pos) => {
-                        try {
-                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
-                            const {address={}} = await res.json();
-                            const cityEl = document.getElementById("city"), countryEl = document.getElementById("country");
-                            if (cityEl) cityEl.textContent = address.city || address.town || address.village || address.suburb || "Неизвестно";
-                            if (countryEl) countryEl.textContent = address.country || "";
-                        } catch { document.getElementById("city").textContent = "Чехия"; }
-                    },
-                    () => { document.getElementById("city").textContent = "Геолокация откл."; }
-                );
-            }
-        });
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
+                        const {address = {}} = await res.json();
+                        document.getElementById("locationText").textContent = 
+                            address.city || address.town || address.village || "Неизвестно";
+                    } catch { document.getElementById("locationText").textContent = "Чехия"; }
+                },
+                () => { document.getElementById("locationText").textContent = "Геолокация откл."; }
+            );
+        }
     </script>
 </body>
 </html>
