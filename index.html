@@ -62,24 +62,42 @@
         .center {
             flex: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 28px;
         }
-        .days {
-            font-size: clamp(80px, 20vw, 140px);
-            font-weight: 700;
-            letter-spacing: -4px;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-        }
-        .info {
+        .counter {
             display: flex;
             flex-direction: column;
-            gap: 4px;
             align-items: center;
-            opacity: 0.6;
-            font-size: 12px;
+            gap: 6px;
+        }
+        .counter.primary .number {
+            font-size: clamp(80px, 22vw, 150px);
+            font-weight: 700;
+            letter-spacing: -5px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .counter.secondary {
+            opacity: 0.75;
+        }
+        .counter.secondary .number {
+            font-size: clamp(44px, 12vw, 72px);
+            font-weight: 600;
+            letter-spacing: -2px;
+        }
+        .label {
+            font-size: 11px;
             font-weight: 500;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+        .divider {
+            width: 32px;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
         }
     </style>
 </head>
@@ -91,20 +109,32 @@
             <div class="location-text" id="locationText">Загрузка...</div>
         </div>
         <div class="center">
-            <div class="days" id="days">0</div>
-        </div>
-        <div class="info">
-            <div>вместе</div>
+            <div class="counter primary">
+                <div class="number" id="daysTogether">0</div>
+                <div class="label">вместе</div>
+            </div>
+            <div class="divider"></div>
+            <div class="counter secondary">
+                <div class="number" id="daysUntil">0</div>
+                <div class="label">до встречи</div>
+            </div>
         </div>
     </div>
     <script>
-        const updateDays = () => {
-            const start = new Date(2026, 2, 29);
+        // ===== НАСТРОЙ ДАТЫ =====
+        const START_DATE = new Date(2026, 2, 29);   // когда начали быть вместе
+        const MEET_DATE  = new Date(2026, 9, 15);   // до какой даты считаем "до встречи"
+        // ==========================
+
+        const updateCounters = () => {
             const today = new Date();
-            document.getElementById("days").textContent = Math.ceil((today - start) / 8.64e7);
+            const together = Math.floor((today - START_DATE) / 8.64e7);
+            const until = Math.ceil((MEET_DATE - today) / 8.64e7);
+            document.getElementById("daysTogether").textContent = together;
+            document.getElementById("daysUntil").textContent = Math.max(0, until);
         };
-        updateDays();
-        setInterval(updateDays, 6e5);
+        updateCounters();
+        setInterval(updateCounters, 6e5);
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
