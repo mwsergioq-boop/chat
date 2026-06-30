@@ -28,14 +28,16 @@
         .bg{
             position:fixed;inset:-20px;
             background:url("photo.JPG") center/cover no-repeat;
-            filter:brightness(.4) saturate(1.1);
+            filter:brightness(.35) saturate(1.15) contrast(1.05);
             z-index:0;
             transform:translate3d(0,0,0);
             transition:transform .15s ease-out;
         }
         .overlay{
             position:fixed;inset:0;
-            background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 50%,rgba(0,0,0,.5) 100%);
+            background:
+                radial-gradient(ellipse at center,transparent 0%,rgba(0,0,0,.4) 100%),
+                linear-gradient(180deg,rgba(0,0,0,.2) 0%,transparent 40%,transparent 60%,rgba(0,0,0,.6) 100%);
             z-index:0;pointer-events:none;
         }
         .wrap{
@@ -45,68 +47,94 @@
             max-width:500px;margin:0 auto;z-index:1;
         }
         .loc{
-            display:flex;align-items:center;gap:8px;
+            display:flex;align-items:center;gap:10px;
             padding:10px 16px;
             background:var(--glass);border-radius:20px;
             -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
             align-self:flex-start;
             transition:transform .2s var(--ease),background .2s;
             cursor:pointer;user-select:none;-webkit-user-select:none;
-            box-shadow:0 8px 32px rgba(0,0,0,.3);
+            border:1px solid rgba(255,255,255,.04);
         }
-        .loc:active{transform:scale(.92);background:var(--glass-active)}
+        .loc:active{transform:scale(.94);background:var(--glass-active)}
+        .dot-wrap{
+            position:relative;width:8px;height:8px;
+            display:flex;align-items:center;justify-content:center;
+        }
         .dot{
             width:6px;height:6px;
             background:#22c55e;border-radius:50%;
-            box-shadow:0 0 8px #22c55e;
-            animation:pulse 2s ease-in-out infinite;
-            flex-shrink:0;
+            position:relative;z-index:2;
         }
-        @keyframes pulse{
-            0%,100%{opacity:1;transform:scale(1)}
-            50%{opacity:.6;transform:scale(1.15)}
+        .dot-glow{
+            position:absolute;inset:-4px;
+            background:#22c55e;border-radius:50%;
+            opacity:.4;filter:blur(4px);
+            animation:breathe 3s ease-in-out infinite;
+        }
+        @keyframes breathe{
+            0%,100%{opacity:.3;transform:scale(1)}
+            50%{opacity:.6;transform:scale(1.3)}
         }
         .loc-txt{
-            font-size:13px;font-weight:500;opacity:.9;
-            white-space:nowrap;
+            font-size:13px;font-weight:500;opacity:.95;
+            white-space:nowrap;letter-spacing:.2px;
         }
         .skeleton{
             width:80px;height:13px;
-            background:linear-gradient(90deg,rgba(255,255,255,.1) 25%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.1) 75%);
+            background:linear-gradient(90deg,rgba(255,255,255,.08) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.08) 75%);
             background-size:200% 100%;
             border-radius:4px;
-            animation:shimmer 1.5s infinite;
+            animation:shimmer 1.8s ease-in-out infinite;
         }
         @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
         .center{
             flex:1;display:flex;flex-direction:column;
-            align-items:center;justify-content:center;gap:28px;
+            align-items:center;justify-content:center;gap:32px;
         }
         .counter{
-            display:flex;flex-direction:column;align-items:center;gap:6px;
-            opacity:0;animation:fadeUp .8s var(--ease) forwards;
+            display:flex;flex-direction:column;align-items:center;gap:8px;
+            opacity:0;animation:fadeUp .9s var(--ease) forwards;
         }
         .counter:nth-child(1){animation-delay:.1s}
-        .counter:nth-child(3){animation-delay:.3s}
+        .counter:nth-child(3){animation-delay:.35s}
         @keyframes fadeUp{
-            from{opacity:0;transform:translateY(20px)}
+            from{opacity:0;transform:translateY(24px)}
             to{opacity:1;transform:translateY(0)}
         }
         .num{
-            font-weight:700;letter-spacing:-5px;
-            text-shadow:0 2px 20px rgba(0,0,0,.3);
+            font-weight:200;letter-spacing:-6px;
+            text-shadow:0 4px 30px rgba(0,0,0,.4);
             font-variant-numeric:tabular-nums;
+            background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.75) 100%);
+            -webkit-background-clip:text;background-clip:text;
+            -webkit-text-fill-color:transparent;
+            transition:opacity .4s var(--ease);
+            line-height:.9;
         }
-        .primary .num{font-size:clamp(80px,22vw,150px)}
-        .secondary{opacity:.75}
-        .secondary .num{font-size:clamp(44px,12vw,72px);font-weight:600;letter-spacing:-2px}
+        .num.fade{opacity:.4}
+        .primary .num{
+            font-size:clamp(90px,26vw,170px);
+            animation:primaryBreathe 6s ease-in-out infinite;
+        }
+        @keyframes primaryBreathe{
+            0%,100%{filter:drop-shadow(0 0 0 rgba(255,255,255,0))}
+            50%{filter:drop-shadow(0 0 30px rgba(255,255,255,.08))}
+        }
+        .secondary{opacity:.85}
+        .secondary .num{
+            font-size:clamp(48px,14vw,80px);
+            font-weight:300;letter-spacing:-3px;
+        }
         .label{
-            font-size:11px;font-weight:500;
-            letter-spacing:1.5px;text-transform:uppercase;opacity:.6;
+            font-size:10px;font-weight:500;
+            letter-spacing:2.5px;text-transform:uppercase;opacity:.5;
         }
         .divider{
-            width:32px;height:1px;background:rgba(255,255,255,.2);
-            opacity:0;animation:fadeIn 1s var(--ease) .2s forwards;
+            position:relative;
+            width:40px;height:1px;
+            background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);
+            opacity:0;animation:fadeIn 1s var(--ease) .25s forwards;
         }
         @keyframes fadeIn{to{opacity:1}}
         @media (prefers-reduced-motion:reduce){
@@ -119,7 +147,10 @@
     <div class="overlay"></div>
     <div class="wrap">
         <div class="loc" id="loc">
-            <div class="dot"></div>
+            <div class="dot-wrap">
+                <div class="dot-glow"></div>
+                <div class="dot"></div>
+            </div>
             <div class="loc-txt" id="locTxt"><div class="skeleton"></div></div>
         </div>
         <div class="center">
@@ -147,15 +178,23 @@
         const $=id=>document.getElementById(id);
         const daysTogether=$("daysTogether"),daysUntil=$("daysUntil"),locTxt=$("locTxt"),bg=$("bg");
         
+        const setNum=(el,val)=>{
+            if(el.textContent!==String(val)){
+                el.classList.add("fade");
+                setTimeout(()=>{
+                    el.textContent=val;
+                    el.classList.remove("fade");
+                    if(el===daysTogether)navigator.vibrate?.(5);
+                },200);
+            }
+        };
+        
         const update=()=>{
             const now=new Date();
             const together=Math.floor((now-C.START)/C.DAY);
             const until=Math.max(0,Math.ceil((C.MEET-now)/C.DAY));
-            if(daysTogether.textContent!==String(together)){
-                daysTogether.textContent=together;
-                navigator.vibrate?.(5);
-            }
-            daysUntil.textContent=until;
+            setNum(daysTogether,together);
+            setNum(daysUntil,until);
         };
         
         update();
