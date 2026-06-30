@@ -2,152 +2,142 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+    <meta name="theme-color" content="#000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Our</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; }
-        body {
-            height: 100dvh;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-            color: white;
-            background: #000;
-            -webkit-font-smoothing: antialiased;
+        :root{
+            --bg:#000;--fg:#fff;--accent:#22c55e;
+            --glass:rgba(255,255,255,.06);--glass-active:rgba(255,255,255,.12);
+            --blur:20px;--ease:cubic-bezier(.4,0,.2,1);
         }
-        .background {
-            position: fixed; inset: 0;
-            background-image: url("photo.JPG");
-            background-size: cover; background-position: center;
-            filter: brightness(0.4) saturate(1.1);
-            z-index: 0;
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%}
+        body{
+            height:100dvh;overflow:hidden;
+            font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+            color:var(--fg);background:var(--bg);
+            -webkit-font-smoothing:antialiased;
+            -webkit-tap-highlight-color:transparent;
         }
-        .container {
-            position: relative;
-            width: 100%; height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: calc(16px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
-            max-width: 500px;
-            margin: 0 auto;
-            z-index: 1;
+        .bg{
+            position:fixed;inset:0;
+            background:url("photo.JPG") center/cover no-repeat;
+            filter:brightness(.4) saturate(1.1);
+            z-index:0;will-change:filter;
         }
-        .location {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            align-self: flex-start;
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+        .wrap{
+            position:relative;width:100%;height:100%;
+            display:flex;flex-direction:column;justify-content:space-between;
+            padding:calc(16px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+            max-width:500px;margin:0 auto;z-index:1;
         }
-        .location:active { transform: scale(0.94); }
-        .dot {
-            width: 6px; height: 6px;
-            background: #22c55e;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e;
+        .loc{
+            display:flex;align-items:center;gap:8px;
+            padding:10px 16px;
+            background:var(--glass);border-radius:20px;
+            backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+            align-self:flex-start;
+            transition:transform .3s var(--ease),background .3s;
+            cursor:pointer;will-change:transform;
+            user-select:none;-webkit-user-select:none;
         }
-        .location-text {
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0.9;
+        .loc:active{transform:scale(.92);background:var(--glass-active)}
+        .dot{
+            width:6px;height:6px;
+            background:var(--accent);border-radius:50%;
+            box-shadow:0 0 8px var(--accent);
+            animation:pulse 2s ease-in-out infinite;
         }
-        .center {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 28px;
+        @keyframes pulse{
+            0%,100%{opacity:1;transform:scale(1)}
+            50%{opacity:.6;transform:scale(1.15)}
         }
-        .counter {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
+        .loc-txt{font-size:13px;font-weight:500;opacity:.9}
+        .center{
+            flex:1;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;gap:28px;
         }
-        .counter.primary .number {
-            font-size: clamp(80px, 22vw, 150px);
-            font-weight: 700;
-            letter-spacing: -5px;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        .counter{
+            display:flex;flex-direction:column;align-items:center;gap:6px;
+            opacity:0;animation:fadeUp .8s var(--ease) forwards;
         }
-        .counter.secondary {
-            opacity: 0.75;
+        .counter:nth-child(1){animation-delay:.1s}
+        .counter:nth-child(3){animation-delay:.3s}
+        @keyframes fadeUp{
+            from{opacity:0;transform:translateY(20px)}
+            to{opacity:1;transform:translateY(0)}
         }
-        .counter.secondary .number {
-            font-size: clamp(44px, 12vw, 72px);
-            font-weight: 600;
-            letter-spacing: -2px;
+        .num{
+            font-weight:700;letter-spacing:-5px;
+            text-shadow:0 2px 20px rgba(0,0,0,.3);
+            font-variant-numeric:tabular-nums;
         }
-        .label {
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            opacity: 0.6;
+        .primary .num{font-size:clamp(80px,22vw,150px)}
+        .secondary{opacity:.75}
+        .secondary .num{font-size:clamp(44px,12vw,72px);font-weight:600;letter-spacing:-2px}
+        .label{
+            font-size:11px;font-weight:500;
+            letter-spacing:1.5px;text-transform:uppercase;opacity:.6;
         }
-        .divider {
-            width: 32px;
-            height: 1px;
-            background: rgba(255,255,255,0.2);
+        .divider{
+            width:32px;height:1px;background:rgba(255,255,255,.2);
+            opacity:0;animation:fadeIn 1s var(--ease) .2s forwards;
+        }
+        @keyframes fadeIn{to{opacity:1}}
+        @media (prefers-reduced-motion:reduce){
+            *{animation-duration:.01ms!important;transition-duration:.01ms!important}
         }
     </style>
 </head>
 <body>
-    <div class="background"></div>
-    <div class="container">
-        <div class="location" id="location">
-            <div class="dot"></div>
-            <div class="location-text" id="locationText">Загрузка...</div>
+    <div class="bg"></div>
+    <div class="wrap">
+        <div class="loc" id="loc" role="button" aria-label="Местоположение">
+            <div class="dot" aria-hidden="true"></div>
+            <div class="loc-txt" id="locTxt">Загрузка...</div>
         </div>
         <div class="center">
-            <div class="counter primary">
-                <div class="number" id="daysTogether">0</div>
+            <div class="counter primary" role="timer" aria-label="Дней вместе">
+                <div class="num" id="daysTogether">0</div>
                 <div class="label">вместе</div>
             </div>
-            <div class="divider"></div>
-            <div class="counter secondary">
-                <div class="number" id="daysUntil">0</div>
+            <div class="divider" aria-hidden="true"></div>
+            <div class="counter secondary" role="timer" aria-label="Дней до встречи">
+                <div class="num" id="daysUntil">0</div>
                 <div class="label">до встречи</div>
             </div>
         </div>
     </div>
     <script>
-        // ===== НАСТРОЙ ДАТЫ =====
-        const START_DATE = new Date(2026, 2, 29);   // когда начали быть вместе
-        const MEET_DATE  = new Date(2026, 9, 15);   // до какой даты считаем "до встречи"
-        // ==========================
-
-        const updateCounters = () => {
-            const today = new Date();
-            const together = Math.floor((today - START_DATE) / 8.64e7);
-            const until = Math.ceil((MEET_DATE - today) / 8.64e7);
-            document.getElementById("daysTogether").textContent = together;
-            document.getElementById("daysUntil").textContent = Math.max(0, until);
+        const START=new Date(2026,2,29),MEET=new Date(2026,9,15),DAY=864e5;
+        const $=id=>document.getElementById(id);
+        const daysTogether=$("daysTogether"),daysUntil=$("daysUntil"),locTxt=$("locTxt");
+        
+        const update=()=>{
+            const now=new Date(),
+                  together=Math.floor((now-START)/DAY),
+                  until=Math.max(0,Math.ceil((MEET-now)/DAY));
+            daysTogether.textContent=together;
+            daysUntil.textContent=until;
         };
-        updateCounters();
-        setInterval(updateCounters, 6e5);
+        update();setInterval(update,6e5);
 
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
-                        const {address = {}} = await res.json();
-                        document.getElementById("locationText").textContent = 
-                            address.city || address.town || address.village || "Неизвестно";
-                    } catch { document.getElementById("locationText").textContent = "Чехия"; }
-                },
-                () => { document.getElementById("locationText").textContent = "Геолокация откл."; }
-            );
+        const loc=$("loc");
+        loc.addEventListener("click",()=>{
+            if(navigator.vibrate)navigator.vibrate(10);
+        });
+
+        if("geolocation"in navigator){
+            navigator.geolocation.getCurrentPosition(async pos=>{
+                try{
+                    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
+                    const{address:a={}}=await r.json();
+                    locTxt.textContent=a.city||a.town||a.village||"Неизвестно";
+                }catch{locTxt.textContent="Чехия"}
+            },()=>{locTxt.textContent="Геолокация откл."},{timeout:1e4});
         }
     </script>
 </body>
