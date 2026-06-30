@@ -12,8 +12,8 @@
     <title>Our</title>
     <style>
         :root{
-            --glass:rgba(255,255,255,.06);--glass-active:rgba(255,255,255,.12);
-            --blur:20px;--ease:cubic-bezier(.4,0,.2,1);
+            --glass:rgba(255,255,255,.05);--glass-active:rgba(255,255,255,.1);
+            --blur:24px;--ease:cubic-bezier(.4,0,.2,1);
         }
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         html,body{width:100%;height:100%;overscroll-behavior:none}
@@ -26,117 +26,137 @@
             touch-action:manipulation;
         }
         .bg{
-            position:fixed;inset:-20px;
+            position:fixed;inset:-30px;
             background:url("photo.JPG") center/cover no-repeat;
-            filter:brightness(.35) saturate(1.15) contrast(1.05);
+            filter:brightness(.32) saturate(1.2) contrast(1.08);
             z-index:0;
             transform:translate3d(0,0,0);
-            transition:transform .15s ease-out;
+            transition:transform .2s ease-out;
         }
-        .overlay{
-            position:fixed;inset:0;
+        .bg::after{
+            content:"";position:absolute;inset:0;
             background:
-                radial-gradient(ellipse at center,transparent 0%,rgba(0,0,0,.4) 100%),
-                linear-gradient(180deg,rgba(0,0,0,.2) 0%,transparent 40%,transparent 60%,rgba(0,0,0,.6) 100%);
-            z-index:0;pointer-events:none;
+                radial-gradient(ellipse at 50% 40%,transparent 0%,rgba(0,0,0,.5) 100%),
+                linear-gradient(180deg,rgba(0,0,0,.25) 0%,transparent 35%,transparent 65%,rgba(0,0,0,.7) 100%);
+        }
+        .noise{
+            position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         }
         .wrap{
             position:relative;width:100%;height:100%;
             display:flex;flex-direction:column;justify-content:space-between;
-            padding:calc(16px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+            padding:calc(20px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
             max-width:500px;margin:0 auto;z-index:1;
         }
         .loc{
-            display:flex;align-items:center;gap:10px;
-            padding:10px 16px;
-            background:var(--glass);border-radius:20px;
+            display:flex;align-items:center;gap:12px;
+            padding:11px 18px;
+            background:var(--glass);border-radius:24px;
             -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
             align-self:flex-start;
-            transition:transform .2s var(--ease),background .2s;
+            transition:transform .25s var(--ease),background .25s;
             cursor:pointer;user-select:none;-webkit-user-select:none;
-            border:1px solid rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.06);
         }
-        .loc:active{transform:scale(.94);background:var(--glass-active)}
+        .loc:active{transform:scale(.93);background:var(--glass-active)}
         .dot-wrap{
-            position:relative;width:8px;height:8px;
+            position:relative;width:10px;height:10px;
             display:flex;align-items:center;justify-content:center;
         }
         .dot{
             width:6px;height:6px;
             background:#22c55e;border-radius:50%;
             position:relative;z-index:2;
+            box-shadow:0 0 6px rgba(34,197,94,.6);
         }
-        .dot-glow{
-            position:absolute;inset:-4px;
-            background:#22c55e;border-radius:50%;
-            opacity:.4;filter:blur(4px);
-            animation:breathe 3s ease-in-out infinite;
+        .dot-ring{
+            position:absolute;inset:0;
+            border:1.5px solid rgba(34,197,94,.4);
+            border-radius:50%;
+            animation:ring 3s ease-out infinite;
         }
-        @keyframes breathe{
-            0%,100%{opacity:.3;transform:scale(1)}
-            50%{opacity:.6;transform:scale(1.3)}
+        @keyframes ring{
+            0%{transform:scale(.8);opacity:1}
+            100%{transform:scale(2);opacity:0}
         }
         .loc-txt{
             font-size:13px;font-weight:500;opacity:.95;
-            white-space:nowrap;letter-spacing:.2px;
+            white-space:nowrap;letter-spacing:.3px;
         }
         .skeleton{
             width:80px;height:13px;
-            background:linear-gradient(90deg,rgba(255,255,255,.08) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.08) 75%);
+            background:linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.06) 75%);
             background-size:200% 100%;
             border-radius:4px;
-            animation:shimmer 1.8s ease-in-out infinite;
+            animation:shimmer 2s ease-in-out infinite;
         }
         @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
         .center{
             flex:1;display:flex;flex-direction:column;
-            align-items:center;justify-content:center;gap:32px;
+            align-items:center;justify-content:center;gap:36px;
         }
         .counter{
-            display:flex;flex-direction:column;align-items:center;gap:8px;
-            opacity:0;animation:fadeUp .9s var(--ease) forwards;
+            display:flex;flex-direction:column;align-items:center;gap:10px;
+            opacity:0;animation:fadeUp 1s var(--ease) forwards;
         }
-        .counter:nth-child(1){animation-delay:.1s}
-        .counter:nth-child(3){animation-delay:.35s}
+        .counter:nth-child(1){animation-delay:.15s}
+        .counter:nth-child(3){animation-delay:.4s}
         @keyframes fadeUp{
-            from{opacity:0;transform:translateY(24px)}
-            to{opacity:1;transform:translateY(0)}
+            from{opacity:0;transform:translateY(30px) scale(.95)}
+            to{opacity:1;transform:translateY(0) scale(1)}
         }
         .num{
-            font-weight:200;letter-spacing:-6px;
-            text-shadow:0 4px 30px rgba(0,0,0,.4);
+            font-weight:100;letter-spacing:-8px;
             font-variant-numeric:tabular-nums;
-            background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.75) 100%);
+            background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.7) 100%);
             -webkit-background-clip:text;background-clip:text;
             -webkit-text-fill-color:transparent;
-            transition:opacity .4s var(--ease);
-            line-height:.9;
+            transition:opacity .5s var(--ease),transform .5s var(--ease);
+            line-height:.85;
+            position:relative;
         }
-        .num.fade{opacity:.4}
+        .num.fade{opacity:.3;transform:scale(.98)}
         .primary .num{
-            font-size:clamp(90px,26vw,170px);
-            animation:primaryBreathe 6s ease-in-out infinite;
+            font-size:clamp(100px,28vw,180px);
+            filter:drop-shadow(0 0 40px rgba(255,255,255,.05));
         }
-        @keyframes primaryBreathe{
-            0%,100%{filter:drop-shadow(0 0 0 rgba(255,255,255,0))}
-            50%{filter:drop-shadow(0 0 30px rgba(255,255,255,.08))}
-        }
-        .secondary{opacity:.85}
+        .secondary{opacity:.9}
         .secondary .num{
-            font-size:clamp(48px,14vw,80px);
-            font-weight:300;letter-spacing:-3px;
+            font-size:clamp(52px,15vw,88px);
+            font-weight:200;letter-spacing:-4px;
         }
         .label{
-            font-size:10px;font-weight:500;
-            letter-spacing:2.5px;text-transform:uppercase;opacity:.5;
+            font-size:9px;font-weight:600;
+            letter-spacing:3.5px;text-transform:uppercase;opacity:.45;
         }
         .divider{
             position:relative;
-            width:40px;height:1px;
-            background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.3) 50%,transparent 100%);
-            opacity:0;animation:fadeIn 1s var(--ease) .25s forwards;
+            width:48px;height:1px;
+            opacity:0;animation:fadeIn 1.2s var(--ease) .3s forwards;
+        }
+        .divider::before{
+            content:"";position:absolute;inset:0;
+            background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);
+        }
+        .divider::after{
+            content:"";position:absolute;
+            left:50%;top:50%;transform:translate(-50%,-50%);
+            width:3px;height:3px;
+            background:rgba(255,255,255,.3);border-radius:50%;
         }
         @keyframes fadeIn{to{opacity:1}}
+        .progress{
+            position:fixed;bottom:0;left:0;right:0;
+            height:1px;z-index:2;
+            background:rgba(255,255,255,.05);
+        }
+        .progress-bar{
+            height:100%;
+            background:linear-gradient(90deg,rgba(255,255,255,.1) 0%,rgba(255,255,255,.3) 100%);
+            transition:width 1s var(--ease);
+            box-shadow:0 0 8px rgba(255,255,255,.2);
+        }
         @media (prefers-reduced-motion:reduce){
             *{animation-duration:.01ms!important;transition-duration:.01ms!important}
         }
@@ -144,11 +164,11 @@
 </head>
 <body>
     <div class="bg" id="bg"></div>
-    <div class="overlay"></div>
+    <div class="noise"></div>
     <div class="wrap">
         <div class="loc" id="loc">
             <div class="dot-wrap">
-                <div class="dot-glow"></div>
+                <div class="dot-ring"></div>
                 <div class="dot"></div>
             </div>
             <div class="loc-txt" id="locTxt"><div class="skeleton"></div></div>
@@ -165,6 +185,9 @@
             </div>
         </div>
     </div>
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
     <script>
         const C={
             START:new Date(2026,2,29),
@@ -176,7 +199,7 @@
         };
         
         const $=id=>document.getElementById(id);
-        const daysTogether=$("daysTogether"),daysUntil=$("daysUntil"),locTxt=$("locTxt"),bg=$("bg");
+        const daysTogether=$("daysTogether"),daysUntil=$("daysUntil"),locTxt=$("locTxt"),bg=$("bg"),progressBar=$("progressBar");
         
         const setNum=(el,val)=>{
             if(el.textContent!==String(val)){
@@ -185,7 +208,7 @@
                     el.textContent=val;
                     el.classList.remove("fade");
                     if(el===daysTogether)navigator.vibrate?.(5);
-                },200);
+                },250);
             }
         };
         
@@ -193,8 +216,12 @@
             const now=new Date();
             const together=Math.floor((now-C.START)/C.DAY);
             const until=Math.max(0,Math.ceil((C.MEET-now)/C.DAY));
+            const total=(C.MEET-C.START)/C.DAY;
+            const progress=Math.min(100,Math.max(0,((now-C.START)/C.DAY)/total*100));
+            
             setNum(daysTogether,together);
             setNum(daysUntil,until);
+            progressBar.style.width=progress+"%";
         };
         
         update();
@@ -208,8 +235,8 @@
         },{passive:true});
         
         document.addEventListener("touchmove",e=>{
-            const dx=(e.touches[0].clientX-startX)*.02;
-            const dy=(e.touches[0].clientY-startY)*.02;
+            const dx=(e.touches[0].clientX-startX)*.025;
+            const dy=(e.touches[0].clientY-startY)*.025;
             bg.style.transform=`translate3d(${dx}px,${dy}px,0)`;
         },{passive:true});
         
