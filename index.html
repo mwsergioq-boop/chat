@@ -2,10 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1">
     <meta name="theme-color" content="#000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
     <meta name="description" content="Наш счётчик дней вместе">
     <link rel="preconnect" href="https://nominatim.openstreetmap.org">
     <title>Our</title>
@@ -14,24 +16,26 @@
             --bg:#000;--fg:#fff;--accent:#22c55e;
             --glass:rgba(255,255,255,.06);--glass-active:rgba(255,255,255,.12);
             --blur:20px;--ease:cubic-bezier(.4,0,.2,1);
-            --shadow:0 8px 32px rgba(0,0,0,.3);
+            --sat-t:env(safe-area-inset-top);--sat-b:env(safe-area-inset-bottom);
         }
-        *{margin:0;padding:0;box-sizing:border-box}
-        html,body{width:100%;height:100%}
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        html,body{width:100%;height:100%;overscroll-behavior:none}
         body{
             height:100dvh;overflow:hidden;
             font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
             color:var(--fg);background:var(--bg);
             -webkit-font-smoothing:antialiased;
-            -webkit-tap-highlight-color:transparent;
+            -webkit-touch-callout:none;
+            touch-action:manipulation;
             contain:layout style paint;
         }
         .bg{
-            position:fixed;inset:0;
+            position:fixed;inset:-20px;
             background:url("photo.JPG") center/cover no-repeat;
             filter:brightness(.4) saturate(1.1);
             z-index:0;will-change:transform;
-            transform:translateZ(0);
+            transform:translate3d(0,0,0);
+            transition:transform .1s linear;
         }
         .overlay{
             position:fixed;inset:0;
@@ -41,7 +45,7 @@
         .wrap{
             position:relative;width:100%;height:100%;
             display:flex;flex-direction:column;justify-content:space-between;
-            padding:calc(16px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+            padding:calc(16px + var(--sat-t)) 20px calc(20px + var(--sat-b));
             max-width:500px;margin:0 auto;z-index:1;
         }
         .loc{
@@ -49,16 +53,15 @@
             display:flex;align-items:center;gap:8px;
             padding:10px 16px;
             background:var(--glass);border-radius:20px;
-            backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+            -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
             align-self:flex-start;
-            transition:transform .3s var(--ease),background .3s,box-shadow .3s;
+            transition:transform .2s var(--ease),background .2s;
             cursor:pointer;will-change:transform;
             user-select:none;-webkit-user-select:none;
-            box-shadow:var(--shadow);
+            box-shadow:0 8px 32px rgba(0,0,0,.3);
             contain:layout style paint;
         }
         .loc:active{transform:scale(.92);background:var(--glass-active)}
-        .loc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
         .ripple{
             position:absolute;border-radius:50%;
             background:rgba(255,255,255,.3);
@@ -71,12 +74,16 @@
             background:var(--accent);border-radius:50%;
             box-shadow:0 0 8px var(--accent);
             animation:pulse 2s ease-in-out infinite;
+            flex-shrink:0;
         }
         @keyframes pulse{
             0%,100%{opacity:1;transform:scale(1)}
             50%{opacity:.6;transform:scale(1.15)}
         }
-        .loc-txt{font-size:13px;font-weight:500;opacity:.9;transition:opacity .3s}
+        .loc-txt{
+            font-size:13px;font-weight:500;opacity:.9;
+            transition:opacity .3s;white-space:nowrap;
+        }
         .skeleton{
             width:80px;height:13px;
             background:linear-gradient(90deg,rgba(255,255,255,.1) 25%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.1) 75%);
@@ -104,7 +111,6 @@
             font-weight:700;letter-spacing:-5px;
             text-shadow:0 2px 20px rgba(0,0,0,.3);
             font-variant-numeric:tabular-nums;
-            transition:transform .3s var(--ease);
             will-change:transform;
         }
         .num.update{animation:pop .4s var(--ease)}
@@ -128,16 +134,13 @@
         @media (prefers-reduced-motion:reduce){
             *{animation-duration:.01ms!important;transition-duration:.01ms!important}
         }
-        @media (hover:hover){
-            .loc:hover{background:var(--glass-active);transform:scale(1.02)}
-        }
     </style>
 </head>
 <body>
     <div class="bg" id="bg"></div>
     <div class="overlay"></div>
     <div class="wrap">
-        <div class="loc" id="loc" role="button" tabindex="0" aria-label="Местоположение">
+        <div class="loc" id="loc" role="button" aria-label="Местоположение">
             <div class="dot" aria-hidden="true"></div>
             <div class="loc-txt" id="locTxt">
                 <div class="skeleton"></div>
@@ -156,12 +159,13 @@
         </div>
     </div>
     <script>
-        const CONFIG={
+        const C={
             START:new Date(2026,2,29),
             MEET:new Date(2026,9,15),
             DAY:864e5,
-            UPDATE_INTERVAL:6e5,
-            GEO_TIMEOUT:1e4
+            UPDATE:6e5,
+            GEO_TIMEOUT:1e4,
+            CACHE_KEY:"our_loc_cache"
         };
         
         const $=id=>document.getElementById(id);
@@ -173,99 +177,165 @@
             bg:$("bg")
         };
         
-        const haptic=(pattern=10)=>{
-            if(navigator.vibrate)navigator.vibrate(pattern);
-        };
+        const haptic=(p=10)=>navigator.vibrate?.(p);
         
         const createRipple=(e,el)=>{
-            const ripple=document.createElement("span");
+            const t=e.touches?.[0]||e;
             const rect=el.getBoundingClientRect();
             const size=Math.max(rect.width,rect.height);
-            const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left-size/2;
-            const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top-size/2;
+            const x=t.clientX-rect.left-size/2;
+            const y=t.clientY-rect.top-size/2;
+            const ripple=document.createElement("span");
             ripple.style.cssText=`width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
             ripple.className="ripple";
             el.appendChild(ripple);
             setTimeout(()=>ripple.remove(),600);
         };
         
-        const animateNumber=(el,value)=>{
-            if(el.textContent!==String(value)){
+        const animateNum=(el,val)=>{
+            if(el.textContent!==String(val)){
                 el.classList.add("update");
                 setTimeout(()=>el.classList.remove("update"),400);
+                haptic(5);
             }
-            el.textContent=value;
+            el.textContent=val;
         };
         
         const update=()=>{
-            const now=new Date(),
-                  together=Math.floor((now-CONFIG.START)/CONFIG.DAY),
-                  until=Math.max(0,Math.ceil((CONFIG.MEET-now)/CONFIG.DAY));
-            animateNumber(els.daysTogether,together);
-            animateNumber(els.daysUntil,until);
+            const now=new Date();
+            const together=Math.floor((now-C.START)/C.DAY);
+            const until=Math.max(0,Math.ceil((C.MEET-now)/C.DAY));
+            animateNum(els.daysTogether,together);
+            animateNum(els.daysUntil,until);
         };
         
         update();
-        setInterval(update,CONFIG.UPDATE_INTERVAL);
+        setInterval(update,C.UPDATE);
         
-        let lastX=0,lastY=0;
-        const handleParallax=e=>{
-            const x=(e.clientX||e.touches?.[0]?.clientX||0)-window.innerWidth/2;
-            const y=(e.clientY||e.touches?.[0]?.clientY||0)-window.innerHeight/2;
-            const dx=(x-lastX)*.01,dy=(y-lastY)*.01;
+        // Параллакс через гироскоп (только мобильные)
+        let orientEnabled=false;
+        const handleOrient=e=>{
+            if(!orientEnabled)return;
+            const x=(e.gamma||0)*.5;
+            const y=(e.beta||0)*.5;
             requestAnimationFrame(()=>{
-                els.bg.style.transform=`translate(${dx}px,${dy}px) translateZ(0)`;
+                els.bg.style.transform=`translate3d(${x}px,${y}px,0)`;
             });
-            lastX=x;lastY=y;
         };
         
-        document.addEventListener("mousemove",handleParallax,{passive:true});
-        document.addEventListener("touchmove",handleParallax,{passive:true});
+        const enableOrient=async()=>{
+            if(typeof DeviceOrientationEvent!=="undefined"){
+                if(typeof DeviceOrientationEvent.requestPermission==="function"){
+                    try{
+                        const p=await DeviceOrientationEvent.requestPermission();
+                        if(p==="granted"){
+                            window.addEventListener("deviceorientation",handleOrient,{passive:true});
+                            orientEnabled=true;
+                        }
+                    }catch{}
+                }else{
+                    window.addEventListener("deviceorientation",handleOrient,{passive:true});
+                    orientEnabled=true;
+                }
+            }
+        };
         
-        const handleLocInteraction=e=>{
-            e.preventDefault();
+        // Параллакс через touch (fallback)
+        let lastTouch=null;
+        const handleTouch=e=>{
+            if(orientEnabled)return;
+            const t=e.touches[0];
+            if(!lastTouch)lastTouch={x:t.clientX,y:t.clientY};
+            const dx=(t.clientX-lastTouch.x)*.02;
+            const dy=(t.clientY-lastTouch.y)*.02;
+            requestAnimationFrame(()=>{
+                els.bg.style.transform=`translate3d(${dx}px,${dy}px,0)`;
+            });
+        };
+        
+        document.addEventListener("touchmove",handleTouch,{passive:true});
+        document.addEventListener("touchend",()=>{
+            lastTouch=null;
+            requestAnimationFrame(()=>{
+                els.bg.style.transform="translate3d(0,0,0)";
+            });
+        },{passive:true});
+        
+        // Локация с кэшированием
+        const updateLoc=(text,cache=false)=>{
+            els.locTxt.style.opacity="0";
+            setTimeout(()=>{
+                els.locTxt.textContent=text;
+                els.locTxt.style.opacity="1";
+                if(cache){
+                    try{localStorage.setItem(C.CACHE_KEY,JSON.stringify({text,time:Date.now()}))}catch{}
+                }
+            },150);
+        };
+        
+        const loadCached=()=>{
+            try{
+                const c=JSON.parse(localStorage.getItem(C.CACHE_KEY));
+                if(c&&Date.now()-c.time<864e5){
+                    updateLoc(c.text);
+                    return true;
+                }
+            }catch{}
+            return false;
+        };
+        
+        // Показать кэш сразу если есть
+        loadCached();
+        
+        const fetchLoc=async pos=>{
+            try{
+                const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
+                if(!r.ok)throw 0;
+                const{address:a={}}=await r.json();
+                updateLoc(a.city||a.town||a.village||"Неизвестно",true);
+            }catch{
+                if(!loadCached())updateLoc("Чехия");
+            }
+        };
+        
+        if("geolocation"in navigator){
+            navigator.geolocation.getCurrentPosition(
+                fetchLoc,
+                ()=>{if(!loadCached())updateLoc("Геолокация откл.")},
+                {timeout:C.GEO_TIMEOUT,enableHighAccuracy:false,maximumAge:36e5}
+            );
+        }else if(!loadCached()){
+            updateLoc("Геолокация не поддерживается");
+        }
+        
+        // Запрос разрешения на гироскоп при первом тапе (iOS 13+)
+        let orientRequested=false;
+        const requestOrient=async()=>{
+            if(orientRequested)return;
+            orientRequested=true;
+            await enableOrient();
+        };
+        
+        els.loc.addEventListener("touchstart",e=>{
             createRipple(e,els.loc);
             haptic([10,50,10]);
-        };
+            requestOrient();
+        },{passive:true});
         
-        els.loc.addEventListener("touchstart",handleLocInteraction,{passive:false});
         els.loc.addEventListener("click",e=>{
             if(!e.cancelable){
                 createRipple(e,els.loc);
                 haptic([10,50,10]);
             }
         });
-        els.loc.addEventListener("keydown",e=>{
-            if(e.key==="Enter"||e.key===" "){
-                e.preventDefault();
-                haptic([10,50,10]);
-            }
-        });
         
-        const updateLocation=text=>{
-            els.locTxt.style.opacity="0";
-            setTimeout(()=>{
-                els.locTxt.innerHTML=text;
-                els.locTxt.style.opacity="1";
-            },150);
-        };
-        
-        if("geolocation"in navigator){
-            navigator.geolocation.getCurrentPosition(
-                async pos=>{
-                    try{
-                        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
-                        if(!r.ok)throw new Error("Network error");
-                        const{address:a={}}=await r.json();
-                        updateLocation(a.city||a.town||a.village||"Неизвестно");
-                    }catch{updateLocation("Чехия")}
-                },
-                ()=>{updateLocation("Геолокация откл.")},
-                {timeout:CONFIG.GEO_TIMEOUT,enableHighAccuracy:false}
-            );
-        }else{
-            updateLocation("Геолокация не поддерживается");
-        }
+        // Предотвращение zoom на double-tap
+        let lastTouchEnd=0;
+        document.addEventListener("touchend",e=>{
+            const now=Date.now();
+            if(now-lastTouchEnd<=300)e.preventDefault();
+            lastTouchEnd=now;
+        },{passive:false});
     </script>
 </body>
 </html>
