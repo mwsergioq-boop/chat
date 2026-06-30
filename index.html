@@ -6,12 +6,15 @@
     <meta name="theme-color" content="#000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Наш счётчик дней вместе">
+    <link rel="preconnect" href="https://nominatim.openstreetmap.org">
     <title>Our</title>
     <style>
         :root{
             --bg:#000;--fg:#fff;--accent:#22c55e;
             --glass:rgba(255,255,255,.06);--glass-active:rgba(255,255,255,.12);
             --blur:20px;--ease:cubic-bezier(.4,0,.2,1);
+            --shadow:0 8px 32px rgba(0,0,0,.3);
         }
         *{margin:0;padding:0;box-sizing:border-box}
         html,body{width:100%;height:100%}
@@ -21,12 +24,19 @@
             color:var(--fg);background:var(--bg);
             -webkit-font-smoothing:antialiased;
             -webkit-tap-highlight-color:transparent;
+            contain:layout style paint;
         }
         .bg{
             position:fixed;inset:0;
             background:url("photo.JPG") center/cover no-repeat;
             filter:brightness(.4) saturate(1.1);
-            z-index:0;will-change:filter;
+            z-index:0;will-change:transform;
+            transform:translateZ(0);
+        }
+        .overlay{
+            position:fixed;inset:0;
+            background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 50%,rgba(0,0,0,.5) 100%);
+            z-index:0;pointer-events:none;
         }
         .wrap{
             position:relative;width:100%;height:100%;
@@ -35,16 +45,27 @@
             max-width:500px;margin:0 auto;z-index:1;
         }
         .loc{
+            position:relative;overflow:hidden;
             display:flex;align-items:center;gap:8px;
             padding:10px 16px;
             background:var(--glass);border-radius:20px;
             backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
             align-self:flex-start;
-            transition:transform .3s var(--ease),background .3s;
+            transition:transform .3s var(--ease),background .3s,box-shadow .3s;
             cursor:pointer;will-change:transform;
             user-select:none;-webkit-user-select:none;
+            box-shadow:var(--shadow);
+            contain:layout style paint;
         }
         .loc:active{transform:scale(.92);background:var(--glass-active)}
+        .loc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+        .ripple{
+            position:absolute;border-radius:50%;
+            background:rgba(255,255,255,.3);
+            transform:scale(0);animation:ripple .6s ease-out;
+            pointer-events:none;
+        }
+        @keyframes ripple{to{transform:scale(4);opacity:0}}
         .dot{
             width:6px;height:6px;
             background:var(--accent);border-radius:50%;
@@ -55,7 +76,15 @@
             0%,100%{opacity:1;transform:scale(1)}
             50%{opacity:.6;transform:scale(1.15)}
         }
-        .loc-txt{font-size:13px;font-weight:500;opacity:.9}
+        .loc-txt{font-size:13px;font-weight:500;opacity:.9;transition:opacity .3s}
+        .skeleton{
+            width:80px;height:13px;
+            background:linear-gradient(90deg,rgba(255,255,255,.1) 25%,rgba(255,255,255,.2) 50%,rgba(255,255,255,.1) 75%);
+            background-size:200% 100%;
+            border-radius:4px;
+            animation:shimmer 1.5s infinite;
+        }
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
         .center{
             flex:1;display:flex;flex-direction:column;
             align-items:center;justify-content:center;gap:28px;
@@ -63,6 +92,7 @@
         .counter{
             display:flex;flex-direction:column;align-items:center;gap:6px;
             opacity:0;animation:fadeUp .8s var(--ease) forwards;
+            contain:layout style paint;
         }
         .counter:nth-child(1){animation-delay:.1s}
         .counter:nth-child(3){animation-delay:.3s}
@@ -74,6 +104,14 @@
             font-weight:700;letter-spacing:-5px;
             text-shadow:0 2px 20px rgba(0,0,0,.3);
             font-variant-numeric:tabular-nums;
+            transition:transform .3s var(--ease);
+            will-change:transform;
+        }
+        .num.update{animation:pop .4s var(--ease)}
+        @keyframes pop{
+            0%{transform:scale(1)}
+            50%{transform:scale(1.05)}
+            100%{transform:scale(1)}
         }
         .primary .num{font-size:clamp(80px,22vw,150px)}
         .secondary{opacity:.75}
@@ -90,54 +128,143 @@
         @media (prefers-reduced-motion:reduce){
             *{animation-duration:.01ms!important;transition-duration:.01ms!important}
         }
+        @media (hover:hover){
+            .loc:hover{background:var(--glass-active);transform:scale(1.02)}
+        }
     </style>
 </head>
 <body>
-    <div class="bg"></div>
+    <div class="bg" id="bg"></div>
+    <div class="overlay"></div>
     <div class="wrap">
-        <div class="loc" id="loc" role="button" aria-label="Местоположение">
+        <div class="loc" id="loc" role="button" tabindex="0" aria-label="Местоположение">
             <div class="dot" aria-hidden="true"></div>
-            <div class="loc-txt" id="locTxt">Загрузка...</div>
+            <div class="loc-txt" id="locTxt">
+                <div class="skeleton"></div>
+            </div>
         </div>
         <div class="center">
-            <div class="counter primary" role="timer" aria-label="Дней вместе">
+            <div class="counter primary" role="timer" aria-label="Дней вместе" aria-live="polite">
                 <div class="num" id="daysTogether">0</div>
                 <div class="label">вместе</div>
             </div>
             <div class="divider" aria-hidden="true"></div>
-            <div class="counter secondary" role="timer" aria-label="Дней до встречи">
+            <div class="counter secondary" role="timer" aria-label="Дней до встречи" aria-live="polite">
                 <div class="num" id="daysUntil">0</div>
                 <div class="label">до встречи</div>
             </div>
         </div>
     </div>
     <script>
-        const START=new Date(2026,2,29),MEET=new Date(2026,9,15),DAY=864e5;
+        const CONFIG={
+            START:new Date(2026,2,29),
+            MEET:new Date(2026,9,15),
+            DAY:864e5,
+            UPDATE_INTERVAL:6e5,
+            GEO_TIMEOUT:1e4
+        };
+        
         const $=id=>document.getElementById(id);
-        const daysTogether=$("daysTogether"),daysUntil=$("daysUntil"),locTxt=$("locTxt");
+        const els={
+            daysTogether:$("daysTogether"),
+            daysUntil:$("daysUntil"),
+            locTxt:$("locTxt"),
+            loc:$("loc"),
+            bg:$("bg")
+        };
+        
+        const haptic=(pattern=10)=>{
+            if(navigator.vibrate)navigator.vibrate(pattern);
+        };
+        
+        const createRipple=(e,el)=>{
+            const ripple=document.createElement("span");
+            const rect=el.getBoundingClientRect();
+            const size=Math.max(rect.width,rect.height);
+            const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left-size/2;
+            const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top-size/2;
+            ripple.style.cssText=`width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+            ripple.className="ripple";
+            el.appendChild(ripple);
+            setTimeout(()=>ripple.remove(),600);
+        };
+        
+        const animateNumber=(el,value)=>{
+            if(el.textContent!==String(value)){
+                el.classList.add("update");
+                setTimeout(()=>el.classList.remove("update"),400);
+            }
+            el.textContent=value;
+        };
         
         const update=()=>{
             const now=new Date(),
-                  together=Math.floor((now-START)/DAY),
-                  until=Math.max(0,Math.ceil((MEET-now)/DAY));
-            daysTogether.textContent=together;
-            daysUntil.textContent=until;
+                  together=Math.floor((now-CONFIG.START)/CONFIG.DAY),
+                  until=Math.max(0,Math.ceil((CONFIG.MEET-now)/CONFIG.DAY));
+            animateNumber(els.daysTogether,together);
+            animateNumber(els.daysUntil,until);
         };
-        update();setInterval(update,6e5);
-
-        const loc=$("loc");
-        loc.addEventListener("click",()=>{
-            if(navigator.vibrate)navigator.vibrate(10);
+        
+        update();
+        setInterval(update,CONFIG.UPDATE_INTERVAL);
+        
+        let lastX=0,lastY=0;
+        const handleParallax=e=>{
+            const x=(e.clientX||e.touches?.[0]?.clientX||0)-window.innerWidth/2;
+            const y=(e.clientY||e.touches?.[0]?.clientY||0)-window.innerHeight/2;
+            const dx=(x-lastX)*.01,dy=(y-lastY)*.01;
+            requestAnimationFrame(()=>{
+                els.bg.style.transform=`translate(${dx}px,${dy}px) translateZ(0)`;
+            });
+            lastX=x;lastY=y;
+        };
+        
+        document.addEventListener("mousemove",handleParallax,{passive:true});
+        document.addEventListener("touchmove",handleParallax,{passive:true});
+        
+        const handleLocInteraction=e=>{
+            e.preventDefault();
+            createRipple(e,els.loc);
+            haptic([10,50,10]);
+        };
+        
+        els.loc.addEventListener("touchstart",handleLocInteraction,{passive:false});
+        els.loc.addEventListener("click",e=>{
+            if(!e.cancelable){
+                createRipple(e,els.loc);
+                haptic([10,50,10]);
+            }
         });
-
+        els.loc.addEventListener("keydown",e=>{
+            if(e.key==="Enter"||e.key===" "){
+                e.preventDefault();
+                haptic([10,50,10]);
+            }
+        });
+        
+        const updateLocation=text=>{
+            els.locTxt.style.opacity="0";
+            setTimeout(()=>{
+                els.locTxt.innerHTML=text;
+                els.locTxt.style.opacity="1";
+            },150);
+        };
+        
         if("geolocation"in navigator){
-            navigator.geolocation.getCurrentPosition(async pos=>{
-                try{
-                    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
-                    const{address:a={}}=await r.json();
-                    locTxt.textContent=a.city||a.town||a.village||"Неизвестно";
-                }catch{locTxt.textContent="Чехия"}
-            },()=>{locTxt.textContent="Геолокация откл."},{timeout:1e4});
+            navigator.geolocation.getCurrentPosition(
+                async pos=>{
+                    try{
+                        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=ru`);
+                        if(!r.ok)throw new Error("Network error");
+                        const{address:a={}}=await r.json();
+                        updateLocation(a.city||a.town||a.village||"Неизвестно");
+                    }catch{updateLocation("Чехия")}
+                },
+                ()=>{updateLocation("Геолокация откл.")},
+                {timeout:CONFIG.GEO_TIMEOUT,enableHighAccuracy:false}
+            );
+        }else{
+            updateLocation("Геолокация не поддерживается");
         }
     </script>
 </body>
