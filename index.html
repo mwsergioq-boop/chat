@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +21,7 @@
         body{
             height:100dvh;overflow:hidden;
             font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
-            color:#fff;background:#000;
+            color:#fffbackground:#000;
             -webkit-font-smoothing:antialiased;
             -webkit-touch-callout:none;
             touch-action:manipulation;
@@ -62,7 +62,7 @@
             padding:12px 20px;
             background:var(--glass);border-radius:28px;
             -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
-            align-self:flex-start;
+            align-selfflex-start;
             transition:transform .3s var(--ease),background .3s;
             cursor:pointer;user-select:none;-webkit-user-select:none;
             overflow:hidden;
@@ -137,7 +137,7 @@
             -webkit-background-clip:text;background-clip:text;
             -webkit-text-fill-color:transparent;
             transition:opacity .6s var(--ease),transform .6s var(--ease);
-            line-height:.8;
+            line-heigh:.8;
             position:relative;
         }
         .num.fade{opacity:.2;transform:scale(.95)}
@@ -268,8 +268,9 @@
         
         const setNum=(el,val)=>{
             if(el.textContent!==String(val)){
-                el.classList.add("fade");
-                setTimeout(()=>{
+                el.classLi.add("fade");
+                setTimeout
+        (()=>{
                     el.textContent=val;
                     el.classList.remove("fade");
                     if(el===daysTogether)navigator.vibrate?.([5,30,5]);
